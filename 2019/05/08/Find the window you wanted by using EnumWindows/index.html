@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Neal&#39;s Blog">
 <meta property="og:description" content="During the development of windows application, you can operate other windows by enumerating windows with EnumWindows. DetailsThe original link is 使用 EnumWindows 找到满足你要求的窗口 - walterlv. But that blog wa">
 <meta property="og:locale" content="English">
-<meta property="og:updated_time" content="2019-05-10T00:36:28.844Z">
+<meta property="og:updated_time" content="2019-05-11T01:25:54.625Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Find the window you wanted by using EnumWindows">
 <meta name="twitter:description" content="During the development of windows application, you can operate other windows by enumerating windows with EnumWindows. DetailsThe original link is 使用 EnumWindows 找到满足你要求的窗口 - walterlv. But that blog wa">
@@ -321,12 +321,12 @@
 
       
         <h4 id="During-the-development-of-windows-application-you-can-operate-other-windows-by-enumerating-windows-with-EnumWindows"><a href="#During-the-development-of-windows-application-you-can-operate-other-windows-by-enumerating-windows-with-EnumWindows" class="headerlink" title="During the development of windows application, you can operate other windows by enumerating windows with EnumWindows."></a>During the development of windows application, you can operate other windows by enumerating windows with <code>EnumWindows</code>.</h4><hr>
-<h2 id="Details"><a href="#Details" class="headerlink" title="Details"></a>Details</h2><p>The original link is <a href="&quot;https://blog.walterlv.com/post/find-specific-window-by-enum-windows.html#enumwindows&quot;" title="source">使用 EnumWindows 找到满足你要求的窗口 - walterlv</a>. But that blog was written in Chinese, so I translate the content to English. Waterlv is a MVP(Microsoft Most Valuable Professional),and he is good at .NET Core\WPF\.NET.</p>
+<h2 id="Details"><a href="#Details" class="headerlink" title="Details"></a>Details</h2><p>The original link is <a href="https://blog.walterlv.com/post/find-specific-window-by-enum-windows.html#enumwindows" title="source" target="_blank" rel="noopener">使用 EnumWindows 找到满足你要求的窗口 - walterlv</a>. But that blog was written in Chinese, so I translate the content to English. Waterlv is a MVP(Microsoft Most Valuable Professional),and he is good at .NET Core\WPF\.NET. Here is his <a href="https://blog.walterlv.com/" target="_blank" rel="noopener">Blog</a>.</p>
 <h2 id="EnumWindows"><a href="#EnumWindows" class="headerlink" title="EnumWindows"></a><code>EnumWindows</code></h2><p>You can get more details about <code>EnumWindows</code> from Microsoft website.</p>
 <p>Before you use <code>EnumWindows</code> with <code>C#</code> , you have to write a platform to call the P/Invoke method. </p>
 <p>Like this:</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">DllImport(<span class="meta-string">"user32.dll"</span>)</span>]</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">extern</span> <span class="keyword">int</span> <span class="title">EnumWindows</span>(<span class="params">WndEnumProc lpEnumFunc, <span class="keyword">int</span> lParam</span>)</span>;</span><br></pre></td></tr></table></figure>
-<h2 id="Enumerate-all-top-level-windows"><a href="#Enumerate-all-top-level-windows" class="headerlink" title="Enumerate all top-level windows"></a>Enumerate all top-level windows</h2><p>The is the offical document for this API description,</p>
+<h2 id="Enumerate-all-top-level-windows"><a href="#Enumerate-all-top-level-windows" class="headerlink" title="Enumerate all top-level windows"></a>Enumerate all top-level windows</h2><p>This is the offical document for this API description,</p>
 <blockquote>
 <p>Enumerates all top-level windows on the screen by passing the handle to each window, in turn, to an application-defined callback function.</p>
 </blockquote>
@@ -382,6 +382,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/05/10/Write-multiple-Main-methods-and-you-can-switch-to-the-one-you-want/" rel="prev" title="Write multiple 'Main' methods(.NET/C#), and switch to correct one.">
+                Write multiple 'Main' methods(.NET/C#), and switch to correct one. <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -460,7 +464,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-count">3</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -473,7 +477,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-count">2</span>
                   <span class="site-state-item-name">tags</span>
                 
               </div>

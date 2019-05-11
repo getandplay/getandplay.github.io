@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="English">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="translate,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="As all books or materials showed that a .NET/C# application start with a Main method. But we can write mutilple Main methods in our project, then we can choose the correct one you wanted.You may thaug">
+<meta name="keywords" content="translate">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Write multiple &#39;Main&#39; methods(.NET&#x2F;C#), and switch to correct one.">
+<meta property="og:url" content="http://yoursite.com/2019/05/10/mutilple-Main-method/Write-multiple-Main-methods-and-you-can-switch-to-the-one-you-want/index.html">
+<meta property="og:site_name" content="Neal&#39;s Blog">
+<meta property="og:description" content="As all books or materials showed that a .NET/C# application start with a Main method. But we can write mutilple Main methods in our project, then we can choose the correct one you wanted.You may thaug">
+<meta property="og:locale" content="English">
+<meta property="og:image" content="http://yoursite.com/2019/05/10/mutilple-Main-method/Write-multiple-Main-methods-and-you-can-switch-to-the-one-you-want/2018-10-09-18-00-40.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/10/mutilple-Main-method/Write-multiple-Main-methods-and-you-can-switch-to-the-one-you-want/2018-10-09-18-18-25.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/10/mutilple-Main-method/Write-multiple-Main-methods-and-you-can-switch-to-the-one-you-want/2018-10-09-20-21-49.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/10/mutilple-Main-method/Write-multiple-Main-methods-and-you-can-switch-to-the-one-you-want/2018-10-09-19-52-46.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/10/mutilple-Main-method/Write-multiple-Main-methods-and-you-can-switch-to-the-one-you-want/2018-10-09-19-54-08.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/10/mutilple-Main-method/Write-multiple-Main-methods-and-you-can-switch-to-the-one-you-want/2018-10-09-20-19-57.png">
+<meta property="og:updated_time" content="2019-05-11T00:51:10.900Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Write multiple &#39;Main&#39; methods(.NET&#x2F;C#), and switch to correct one.">
+<meta name="twitter:description" content="As all books or materials showed that a .NET/C# application start with a Main method. But we can write mutilple Main methods in our project, then we can choose the correct one you wanted.You may thaug">
+<meta name="twitter:image" content="http://yoursite.com/2019/05/10/mutilple-Main-method/Write-multiple-Main-methods-and-you-can-switch-to-the-one-you-want/2018-10-09-18-00-40.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","Sidebar Display, available value (only for Muse | Mist)":["always  expand for all pages automatically"],"display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/05/10/mutilple-Main-method/Write-multiple-Main-methods-and-you-can-switch-to-the-one-you-want/">
+
+
+
+
+
+  <title>Write multiple 'Main' methods(.NET/C#), and switch to correct one. | Neal's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="English">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Neal's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/10/mutilple-Main-method/Write-multiple-Main-methods-and-you-can-switch-to-the-one-you-want/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Neal chen">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/badboy.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Neal's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Write multiple 'Main' methods(.NET/C#), and switch to correct one.</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-05-10T16:27:10-06:00">
+                2019-05-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h4 id="As-all-books-or-materials-showed-that-a-NET-C-application-start-with-a-Main-method-But-we-can-write-mutilple-Main-methods-in-our-project-then-we-can-choose-the-correct-one-you-wanted"><a href="#As-all-books-or-materials-showed-that-a-NET-C-application-start-with-a-Main-method-But-we-can-write-mutilple-Main-methods-in-our-project-then-we-can-choose-the-correct-one-you-wanted" class="headerlink" title="As all books or materials showed that a .NET/C# application start with a Main method. But we can write mutilple Main methods in our project, then we can choose the correct one you wanted."></a>As all books or materials showed that a .NET/C# application start with a <code>Main</code> method. But we can write mutilple <code>Main</code> methods in our project, then we can choose the correct one you wanted.</h4><h4 id="You-may-thaught-that-mutiple-Main-is-useless-but-when-your-project-has-different-startup-processes-depend-on-different-compile-conditions-or-you-have-to-change-a-lot-codes-to-start-your-application-it-may-be-a-good-choice-to-write-mutilple-Main-methods"><a href="#You-may-thaught-that-mutiple-Main-is-useless-but-when-your-project-has-different-startup-processes-depend-on-different-compile-conditions-or-you-have-to-change-a-lot-codes-to-start-your-application-it-may-be-a-good-choice-to-write-mutilple-Main-methods" class="headerlink" title="You may thaught that mutiple Main is useless, but when your project has different startup processes depend on different compile conditions or you have to change a lot codes to start your application,it may be a good choice to write mutilple Main methods."></a>You may thaught that mutiple <code>Main</code> is useless, but when your project has different startup processes depend on different compile conditions or you have to change a lot codes to start your application,it may be a good choice to write mutilple <code>Main</code> methods.</h4><hr>
+<h2 id="Details"><a href="#Details" class="headerlink" title="Details"></a>Details</h2><p>The original link is <a href="&quot;https://blog.walterlv.com/post/write-multiple-main-and-related-startup-codes.html&quot;" title="source">.NET/C# 中你可以在代码中写多个 Main 函数，然后按需要随时切换 - walterlv</a>. But that blog was written in Chinese, so I translate the content to English. Waterlv is a MVP(Microsoft Most Valuable Professional),and he is good at .NET Core\WPF\.NET. Here is his <a href="&quot;https://blog.walterlv.com/&quot;">Blog</a>.</p>
+<h3 id="Where-can-we-choose-the-correct-Main-method"><a href="#Where-can-we-choose-the-correct-Main-method" class="headerlink" title="Where can we choose the correct Main method."></a>Where can we choose the correct <code>Main</code> method.</h3><p>At the project which has <code>Main</code> method, the steps are listed below :<br><em>Right click (show menu items)-&gt;Properties-&gt;Application-&gt;Startup object</em> . As we can see,the default value of <em>startup object</em> is <em>Not set</em>.<br></p>
+<h3 id="Choose-the-correct-Main-method"><a href="#Choose-the-correct-Main-method" class="headerlink" title="Choose the correct Main method."></a>Choose the correct <code>Main</code> method.</h3><p>If there are mutiple <code>Main</code> methods, and we don’t select a value at <em>Startup object</em> (the value is “Not set”), we will get an error when we compile these codes.<br><img src="./2018-10-09-18-00-40.png" alt><br>Here is the message of the compile error.</p>
+<blockquote>
+<p>Error CS0017<br>Program has more than one entry point defined. Compile with /main to specify the type that contains the entry point.<br>Walterlv.Demo.Main C:\Users\lvyi\Desktop\Walterlv.Demo.Main\Walterlv.Demo.Main\NewProgram.cs</p>
+</blockquote>
+<p>We can fix this error by choosing a correct <code>Main</code> method.<br><img src="./2018-10-09-18-18-25.png" alt></p>
+<h3 id="We-write-a-WPF-application"><a href="#We-write-a-WPF-application" class="headerlink" title="We write a WPF application"></a>We write a WPF application</h3><p>At this step, we can do some more complicated works that we changed the application to WPF application.<br><img src="./2018-10-09-20-21-49.png" alt><br>Change the <em>startup object</em> to <code>Walterlv.Demo.App</code>.<br><img src="./2018-10-09-19-52-46.png" alt><br>Then, we start this WPF application.<br><img src="./2018-10-09-19-54-08.png" alt><br>It is important to note that,if you use new .csproj file in you project,the contents are as follows<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">Project</span> <span class="attr">Sdk</span>=<span class="string">"Microsoft.NET.Sdk"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">PropertyGroup</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">OutputType</span>&gt;</span>Exe<span class="tag">&lt;/<span class="name">OutputType</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">TargetFramework</span>&gt;</span>net472<span class="tag">&lt;/<span class="name">TargetFramework</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">LanguageTargets</span>&gt;</span>$(MSBuildToolsPath)\Microsoft.CSharp.targets<span class="tag">&lt;/<span class="name">LanguageTargets</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">RootNamespace</span>&gt;</span>Walterlv.Demo<span class="tag">&lt;/<span class="name">RootNamespace</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">StartupObject</span>&gt;</span>Walterlv.Demo.App<span class="tag">&lt;/<span class="name">StartupObject</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">PropertyGroup</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">ItemGroup</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Reference</span> <span class="attr">Include</span>=<span class="string">"PresentationCore"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Reference</span> <span class="attr">Include</span>=<span class="string">"PresentationFramework"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Reference</span> <span class="attr">Include</span>=<span class="string">"System.Xaml"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Reference</span> <span class="attr">Include</span>=<span class="string">"WindowsBase"</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">ItemGroup</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">ItemGroup</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">ApplicationDefinition</span> <span class="attr">Include</span>=<span class="string">"App.xaml"</span> <span class="attr">SubType</span>=<span class="string">"Designer"</span> <span class="attr">Generator</span>=<span class="string">"MSBuild:Compile"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Page</span> <span class="attr">Include</span>=<span class="string">"**\*.xaml"</span> <span class="attr">Exclude</span>=<span class="string">"App.xaml"</span> <span class="attr">SubType</span>=<span class="string">"Designer"</span> <span class="attr">Generator</span>=<span class="string">"MSBuild:Compile"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Compile</span> <span class="attr">Update</span>=<span class="string">"**\*.xaml.cs"</span> <span class="attr">DependentUpon</span>=<span class="string">"%(Filename)"</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">ItemGroup</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">Project</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>We keep the default code in App.xaml file.<br><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;Application x:Class=<span class="string">"Walterlv.Demo.App"</span></span><br><span class="line">             xmlns=<span class="string">"http://schemas.microsoft.com/winfx/2006/xaml/presentation"</span></span><br><span class="line">             xmlns:x=<span class="string">"http://schemas.microsoft.com/winfx/2006/xaml"</span>&gt;</span><br><span class="line">&lt;/Application&gt;</span><br></pre></td></tr></table></figure></p>
+<p>And the codes in App.xaml.cs file are pretty simple.<br><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Windows;</span><br><span class="line"><span class="keyword">namespace</span> <span class="title">Walterlv.Demo</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">partial</span> <span class="keyword">class</span> <span class="title">App</span> : <span class="title">Application</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="function"><span class="keyword">protected</span> <span class="keyword">override</span> <span class="keyword">void</span> <span class="title">OnStartup</span>(<span class="params">StartupEventArgs e</span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            <span class="keyword">var</span> window = <span class="keyword">new</span> MainWindow();</span><br><span class="line">            window.Show();</span><br><span class="line"></span><br><span class="line">            <span class="keyword">base</span>.OnStartup(e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>When we run the application now, the <code>Main</code> methods in <code>Program</code> file and <code>NewProgram</code> file do not work, because we set <code>Walterlv.Demo.App</code> as the value of <em>Startup Object</em>.</p>
+<h3 id="Switch-different-startup-processes-depending-on-the-Startup-Object"><a href="#Switch-different-startup-processes-depending-on-the-Startup-Object" class="headerlink" title="Switch different startup processes depending on the Startup Object"></a>Switch different startup processes depending on the <em>Startup Object</em></h3><p>Now, you got a functional requirement </p>
+<blockquote>
+<p>The startup processes changes depending on the value of <em>Startup Object</em>.<br>Specifically, if we start the <code>Main</code> method in <code>Program</code> file we startup an APP, also if we start <code>Main</code> in <code>NewProgram</code> we run another APP.<br>So, we can create a new file <code>APP.new.xaml.cs</code> which share the same xaml file (<code>APP.xaml</code>) with <code>App.xaml.cs</code>.<br>And we have to change the code in csproj, the codes are as followed</p>
+</blockquote>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">Project</span> <span class="attr">Sdk</span>=<span class="string">"Microsoft.NET.Sdk"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">PropertyGroup</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">OutputType</span>&gt;</span>Exe<span class="tag">&lt;/<span class="name">OutputType</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">TargetFramework</span>&gt;</span>net472<span class="tag">&lt;/<span class="name">TargetFramework</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">LanguageTargets</span>&gt;</span>$(MSBuildToolsPath)\Microsoft.CSharp.targets<span class="tag">&lt;/<span class="name">LanguageTargets</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">RootNamespace</span>&gt;</span>Walterlv.Demo<span class="tag">&lt;/<span class="name">RootNamespace</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">StartupObject</span>&gt;</span>Walterlv.Demo.NewProgram<span class="tag">&lt;/<span class="name">StartupObject</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">PropertyGroup</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- region: added code--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">PropertyGroup</span> <span class="attr">Condition</span>=<span class="string">" '$(StartupObject)' == 'Walterlv.Demo.Program' "</span>&gt;</span></span><br><span class="line">      <span class="comment">&lt;!-- run app.xaml.cs --&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">AppCsPath</span>&gt;</span>App.xaml.cs<span class="tag">&lt;/<span class="name">AppCsPath</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">PropertyGroup</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">PropertyGroup</span> <span class="attr">Condition</span>=<span class="string">" '$(StartupObject)' == 'Walterlv.Demo.NewProgram' "</span>&gt;</span></span><br><span class="line">      <span class="comment">&lt;!-- run app.new.xaml.cs --&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">AppCsPath</span>&gt;</span>App.new.xaml.cs<span class="tag">&lt;/<span class="name">AppCsPath</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">PropertyGroup</span>&gt;</span></span><br><span class="line"> <span class="comment">&lt;!-- endregion --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">ItemGroup</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">Reference</span> <span class="attr">Include</span>=<span class="string">"PresentationCore"</span> /&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">Reference</span> <span class="attr">Include</span>=<span class="string">"PresentationFramework"</span> /&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">Reference</span> <span class="attr">Include</span>=<span class="string">"System.Xaml"</span> /&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">Reference</span> <span class="attr">Include</span>=<span class="string">"WindowsBase"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">ItemGroup</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">ItemGroup</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">ApplicationDefinition</span> <span class="attr">Include</span>=<span class="string">"App.xaml"</span> <span class="attr">SubType</span>=<span class="string">"Designer"</span> <span class="attr">Generator</span>=<span class="string">"MSBuild:Compile"</span> /&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">Page</span> <span class="attr">Include</span>=<span class="string">"**\*.xaml"</span> <span class="attr">Exclude</span>=<span class="string">"App.xaml"</span> <span class="attr">SubType</span>=<span class="string">"Designer"</span> <span class="attr">Generator</span>=<span class="string">"MSBuild:Compile"</span> /&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">Compile</span> <span class="attr">Update</span>=<span class="string">"**\*.xaml.cs"</span> <span class="attr">DependentUpon</span>=<span class="string">"%(Filename)"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!--region: added code--&gt;</span></span><br><span class="line">      <span class="comment">&lt;!-- remove all APP file,because they will be added later --&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">Compile</span> <span class="attr">Remove</span>=<span class="string">"App.xaml.cs"</span> /&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">Compile</span> <span class="attr">Remove</span>=<span class="string">"App.new.xaml.cs"</span> /&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">Compile</span> <span class="attr">Include</span>=<span class="string">"$(AppCsPath)"</span> <span class="attr">DependentUpon</span>=<span class="string">"App.xaml"</span> <span class="attr">SubType</span>=<span class="string">"Designer"</span> /&gt;</span></span><br><span class="line"><span class="comment">&lt;!--endregion--&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">ItemGroup</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;/<span class="name">Project</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>We can se that it add some judgement code in this <code>.csproj</code>, it can run deffirent <code>.xaml.cs</code> files depend on the value of <code>$(StartupObject)</code>.<br>Base on the above, we have different <code>.xaml.cs</code> file for different value of <em>Startup Object</em>. We can write different codes in these two files.<br>For example,the code in <code>App.new.xaml.cs</code> are as followed<br><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Windows;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">Walterlv.Demo</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">partial</span> <span class="keyword">class</span> <span class="title">App</span> : <span class="title">Application</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="function"><span class="keyword">protected</span> <span class="keyword">override</span> <span class="keyword">void</span> <span class="title">OnStartup</span>(<span class="params">StartupEventArgs e</span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            <span class="keyword">var</span> window = <span class="keyword">new</span> MainWindow</span><br><span class="line">            &#123;</span><br><span class="line">                Title = <span class="string">"New Walterlv Demo"</span>,</span><br><span class="line">            &#125;;</span><br><span class="line">            window.Show();</span><br><span class="line"></span><br><span class="line">            <span class="keyword">base</span>.OnStartup(e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>They are different with the codes in <code>App.xaml.cs</code>,we change the title of window in these code.<br><img src="./2018-10-09-20-19-57.png" alt></p>
+<h3 id="Replace-files-with-conditional-compilers"><a href="#Replace-files-with-conditional-compilers" class="headerlink" title="Replace files with conditional compilers"></a>Replace files with conditional compilers</h3><p>If there are just a little differences among your startup processes in your project,you can use conditional compiler to replace files.<br><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;PropertyGroup Condition=<span class="string">" '$(StartupObject)' == 'Walterlv.Demo.Program' "</span>&gt;</span><br><span class="line">  &lt;DefineConstants&gt;$(DefineConstants);OLD&lt;/DefineConstants&gt;</span><br><span class="line">&lt;/PropertyGroup&gt;</span><br><span class="line">&lt;PropertyGroup Condition=<span class="string">" '$(StartupObject)' == 'Walterlv.Demo.NewProgram' "</span>&gt;</span><br><span class="line">  &lt;DefineConstants&gt;$(DefineConstants);NEW&lt;/DefineConstants&gt;</span><br><span class="line">&lt;/PropertyGroup&gt;</span><br></pre></td></tr></table></figure></p>
+<p>Currently,you can use coditional compilers to control your startup processes.<br><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Windows;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">namespace</span> <span class="title">Walterlv.Demo</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">partial</span> <span class="keyword">class</span> <span class="title">App</span> : <span class="title">Application</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="function"><span class="keyword">protected</span> <span class="keyword">override</span> <span class="keyword">void</span> <span class="title">OnStartup</span>(<span class="params">StartupEventArgs e</span>)</span></span><br><span class="line"><span class="function"></span>            &#123;</span><br><span class="line">                <span class="keyword">var</span> window = <span class="keyword">new</span> MainWindow()</span><br><span class="line">+   <span class="meta">#<span class="meta-keyword">if</span> NEW</span></span><br><span class="line">                &#123;</span><br><span class="line">                    Title = <span class="string">"New Walterlv Demo"</span>,</span><br><span class="line">                &#125;;</span><br><span class="line">+   <span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">                window.Show();</span><br><span class="line"></span><br><span class="line">                <span class="keyword">base</span>.OnStartup(e);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/translate/" rel="tag"># translate</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/05/08/Find the window you wanted by using EnumWindows/" rel="next" title="Find the window you wanted by using EnumWindows">
+                <i class="fa fa-chevron-left"></i> Find the window you wanted by using EnumWindows
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/badboy.jpg" alt="Neal chen">
+            
+              <p class="site-author-name" itemprop="name">Neal chen</p>
+              <p class="site-description motion-element" itemprop="description">.NET core\WPF\.NET</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:chentianlong0608@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#As-all-books-or-materials-showed-that-a-NET-C-application-start-with-a-Main-method-But-we-can-write-mutilple-Main-methods-in-our-project-then-we-can-choose-the-correct-one-you-wanted"><span class="nav-number">1.</span> <span class="nav-text">As all books or materials showed that a .NET/C# application start with a Main method. But we can write mutilple Main methods in our project, then we can choose the correct one you wanted.</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#You-may-thaught-that-mutiple-Main-is-useless-but-when-your-project-has-different-startup-processes-depend-on-different-compile-conditions-or-you-have-to-change-a-lot-codes-to-start-your-application-it-may-be-a-good-choice-to-write-mutilple-Main-methods"><span class="nav-number">2.</span> <span class="nav-text">You may thaught that mutiple Main is useless, but when your project has different startup processes depend on different compile conditions or you have to change a lot codes to start your application,it may be a good choice to write mutilple Main methods.</span></a></li></ol><li class="nav-item nav-level-2"><a class="nav-link" href="#Details"><span class="nav-number"></span> <span class="nav-text">Details</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Where-can-we-choose-the-correct-Main-method"><span class="nav-number"></span> <span class="nav-text">Where can we choose the correct Main method.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Choose-the-correct-Main-method"><span class="nav-number"></span> <span class="nav-text">Choose the correct Main method.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#We-write-a-WPF-application"><span class="nav-number"></span> <span class="nav-text">We write a WPF application</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Switch-different-startup-processes-depending-on-the-Startup-Object"><span class="nav-number"></span> <span class="nav-text">Switch different startup processes depending on the Startup Object</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Replace-files-with-conditional-compilers"><span class="nav-number"></span> <span class="nav-text">Replace files with conditional compilers</span></a></li></ol></li></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Neal chen</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

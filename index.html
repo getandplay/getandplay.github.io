@@ -252,6 +252,148 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/12/Lesser-known-technologies-in-Xaml/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Neal chen">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/badboy.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Neal's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/05/12/Lesser-known-technologies-in-Xaml/" itemprop="url">Lesser known technologies in Xaml</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-05-12T16:11:13-06:00">
+                2019-05-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h4 id="This-article-is-going-to-intruduce-some-lesser-known-technologies-about-Xaml-file"><a href="#This-article-is-going-to-intruduce-some-lesser-known-technologies-about-Xaml-file" class="headerlink" title="This article is going to intruduce some lesser known technologies about Xaml file."></a>This article is going to intruduce some lesser known technologies about Xaml file.</h4><hr>
+<h3 id="Detail"><a href="#Detail" class="headerlink" title="Detail"></a>Detail</h3><blockquote>
+<p>The original link is <a href="https://blog.walterlv.com/post/those-people-dont-know-about-xaml" target="_blank" rel="noopener">XAML 很少人知道的科技 - walterlv</a>. But that blog was written in Chinese, so I translate the content to English. Waterlv is a MVP(Microsoft Most Valuable Professional),and he is good at .NET Core\WPF\.NET. Here is his <a href="https://blog.walterlv.com/" target="_blank" rel="noopener">Blog</a>.</p>
+</blockquote>
+<hr>
+<h3 id="The-value-of-Thickness-can-be-splited-by-space"><a href="#The-value-of-Thickness-can-be-splited-by-space" class="headerlink" title="The value of Thickness can be splited by space."></a>The value of <code>Thickness</code> can be splited by space.</h3><p>When we set the value of <code>FrameworkElement</code>‘s <code>Margin</code> property at Xaml designer, we always use comma to split it. </p>
+<p>But have you tried to use space to split the value of <code>Thickness</code> ?</p>
+<p>Here is an example<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">Button</span> <span class="attr">Margin</span>=<span class="string">"10 12 0 0"</span>/&gt;</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="Set-mutilple-values-of-enum-with-comma"><a href="#Set-mutilple-values-of-enum-with-comma" class="headerlink" title="Set mutilple values of enum with comma(,)."></a>Set mutilple values of enum with comma(,).</h3><p>If an <code>enum</code> was marked <code>[Flags]</code> attribute,it can be set mutilple values with bit operation.<br><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">Flags</span>]</span><br><span class="line"><span class="keyword">enum</span> NonClientFrameEdges</span><br><span class="line">&#123;</span><br><span class="line">    Left = <span class="number">0x001</span>,</span><br><span class="line">    Right = <span class="number">0x002</span>,</span><br><span class="line">    Top = <span class="number">0x003</span>,</span><br><span class="line">    Bottom = <span class="number">0x004</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>How to set the mutiple values of this <code>enum</code>? We can use <code>,</code> to fix this problem. Here is an example<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">WindowChrome</span> <span class="attr">NonClientFrameEdges</span>=<span class="string">"Left,Bottom,Right"</span> <span class="attr">GlassFrameThickness</span>=<span class="string">"0 64 0 0"</span> <span class="attr">UseAeroCaptionButtons</span>=<span class="string">"False"</span> /&gt;</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="Set-mutiple-values-of-enum-with"><a href="#Set-mutiple-values-of-enum-with" class="headerlink" title="Set mutiple values of enum with +."></a>Set mutiple values of <code>enum</code> with <code>+</code>.</h3><p>Usually, we use comma to set mutiple values of <code>enum</code>.But,when we set the value of keyboard shortcuts in <code>WPF/UWP</code> ,we use <code>+</code> instead of <code>,</code>.<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">KeyBinding</span> <span class="attr">Command</span>=<span class="string">"&#123;x:Static WalterlvCommands.Foo&#125;"</span> <span class="attr">Modifiers</span>=<span class="string">"Control+Shift"</span> <span class="attr">Key</span>=<span class="string">"W"</span>/&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>The type of <code>Modifiers</code> is <code>ModifierKeys</code>, and there is a special converter class which inherited <code>TypeConverter</code>. This class converters the value of <code>Modifiers</code> property (<code>string</code>) to <code>enum</code>. So, we use <code>+</code> to do bit operations for mutilple values of keyboard shortcuts in Xaml.</p>
+<h3 id="Set-value-of-XAML-namespace-with-the-type-of-Url"><a href="#Set-value-of-XAML-namespace-with-the-type-of-Url" class="headerlink" title="Set value of XAML namespace with the type of Url."></a>Set value of XAML namespace with the type of Url.</h3><p>The namespace of original controls in <code>WPF/UWP</code> is <a href="http://schemas.microsoft.com/winfx/2006/xaml/presentation" target="_blank" rel="noopener">http://schemas.microsoft.com/winfx/2006/xaml/presentation</a>; and the namespace of XAML’s designer is <a href="http://schemas.microsoft.com/winfx/2006/xaml" target="_blank" rel="noopener"> http://schemas.microsoft.com/winfx/2006/xaml</a>. There are many XAML namespaces which was named with Url.</p>
+<p>We can set namespace name to Url type by adding an attribute above current namespace.<br><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Windows.Markup;</span><br><span class="line">[<span class="meta">assembly: XmlnsDefinition(<span class="meta-string">"http://walterlv.github.io/demo"</span>, <span class="meta-string">"Walterlv.NewCsprojDemo"</span>)</span>]</span><br></pre></td></tr></table></figure></p>
+<p>For more informations, you can visit this blog:</p>
+<p><a href="https://blog.walterlv.com/post/define-xmlns-of-for-xaml.html" target="_blank" rel="noopener">让你编写的控件库在 XAML 中有一个统一的漂亮的命名空间（xmlns）和命名空间前缀</a>. This blog was written in Chinese, I will translate it later.</p>
+<h3 id="Set-default-value-of-namespace-prefix-in-XAML"><a href="#Set-default-value-of-namespace-prefix-in-XAML" class="headerlink" title="Set default value of namespace prefix in XAML."></a>Set default value of namespace prefix in XAML.</h3><p>The default value of XAML namespace in <code>WPF/UWP</code> is <code>x</code>. If we want set default prefix for ourselves’s namespace, we can add an special <code>Attribute</code> to our namespace.Here is an example.<br><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Windows.Markup;</span><br><span class="line">[<span class="meta">assembly: XmlnsPrefix(<span class="meta-string">"http://walterlv.github.io/demo"</span>, <span class="meta-string">"w"</span>)</span>]</span><br></pre></td></tr></table></figure></p>
+<p>After you set this attribute, the XAML designer will use <code>w</code> as your prefix,when you add this namespace.</p>
+<p>For more informations,you can visit this blog:<br><a href="https://blog.walterlv.com/post/define-xmlns-of-for-xaml.html" target="_blank" rel="noopener">让你编写的控件库在 XAML 中有一个统一的漂亮的命名空间（xmlns）和命名空间前缀</a>.This blog was written in Chinese, I will translate it later.</p>
+<p>It’s important to note that the defined component cann’t be used in the same assembly!</p>
+<h3 id="Use-your-controls-library-without-a-namespace-prefix-in-XAML"><a href="#Use-your-controls-library-without-a-namespace-prefix-in-XAML" class="headerlink" title="Use your controls library without a namespace prefix in XAML"></a>Use your controls library without a namespace prefix in XAML</h3><p>We write a usercontrol which’s name is <code>DemoPage</code>. Usually, we should add a namespace before we use it in XAML. But,there is a method to avoid adding a namespce before we use it.<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">UserControl</span></span></span><br><span class="line"><span class="tag">    <span class="attr">x:Class</span>=<span class="string">"HuyaHearhira.UserControl1"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns</span>=<span class="string">"http://schemas.microsoft.com/winfx/2006/xaml/presentation"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:x</span>=<span class="string">"http://schemas.microsoft.com/winfx/2006/xaml"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Grid</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">DemoPage</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">Grid</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">UserControl</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>The method is that we define the namespace as <code>http://schemas.microsoft.com/winfx/2006/xaml/presentation</code>.<br><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Windows.Markup;</span><br><span class="line">[<span class="meta">assembly: XmlnsDefinition(<span class="meta-string">"http://schemas.microsoft.com/winfx/2006/xaml/presentation"</span>, <span class="meta-string">"Walterlv.NewCsprojDemo"</span>)</span>]</span><br></pre></td></tr></table></figure></p>
+<p>It’s important to note that the defined component cann’t be used in the same assembly!</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/10/Write-multiple-Main-methods-and-you-can-switch-to-the-one-you-want/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -324,7 +466,9 @@
         
           
             <h4 id="As-all-books-or-materials-showed-that-a-NET-C-application-start-with-a-Main-method-But-we-can-write-mutilple-Main-methods-in-our-project-then-we-can-choose-the-correct-one-you-wanted"><a href="#As-all-books-or-materials-showed-that-a-NET-C-application-start-with-a-Main-method-But-we-can-write-mutilple-Main-methods-in-our-project-then-we-can-choose-the-correct-one-you-wanted" class="headerlink" title="As all books or materials showed that a .NET/C# application start with a Main method. But we can write mutilple Main methods in our project, then we can choose the correct one you wanted."></a>As all books or materials showed that a .NET/C# application start with a <code>Main</code> method. But we can write mutilple <code>Main</code> methods in our project, then we can choose the correct one you wanted.</h4><h4 id="You-may-thaught-that-mutiple-Main-is-useless-but-when-your-project-has-different-startup-processes-depend-on-different-compile-conditions-or-you-have-to-change-a-lot-codes-to-start-your-application-it-may-be-a-good-choice-to-write-mutilple-Main-methods"><a href="#You-may-thaught-that-mutiple-Main-is-useless-but-when-your-project-has-different-startup-processes-depend-on-different-compile-conditions-or-you-have-to-change-a-lot-codes-to-start-your-application-it-may-be-a-good-choice-to-write-mutilple-Main-methods" class="headerlink" title="You may thaught that mutiple Main is useless, but when your project has different startup processes depend on different compile conditions or you have to change a lot codes to start your application,it may be a good choice to write mutilple Main methods."></a>You may thaught that mutiple <code>Main</code> is useless, but when your project has different startup processes depend on different compile conditions or you have to change a lot codes to start your application,it may be a good choice to write mutilple <code>Main</code> methods.</h4><hr>
-<h2 id="Details"><a href="#Details" class="headerlink" title="Details"></a>Details</h2><p>The original link is <a href="https://blog.walterlv.com/post/write-multiple-main-and-related-startup-codes.html" target="_blank" rel="noopener">.NET/C# 中你可以在代码中写多个 Main 函数，然后按需要随时切换 - walterlv</a>. But that blog was written in Chinese, so I translate the content to English. Waterlv is a MVP(Microsoft Most Valuable Professional),and he is good at .NET Core\WPF\.NET. Here is his <a href="https://blog.walterlv.com/" target="_blank" rel="noopener">Blog</a>.</p>
+<h2 id="Details"><a href="#Details" class="headerlink" title="Details"></a>Details</h2><blockquote>
+<p>The original link is <a href="https://blog.walterlv.com/post/write-multiple-main-and-related-startup-codes.html" target="_blank" rel="noopener">.NET/C# 中你可以在代码中写多个 Main 函数，然后按需要随时切换 - walterlv</a>. But that blog was written in Chinese, so I translate the content to English. Waterlv is a MVP(Microsoft Most Valuable Professional),and he is good at .NET Core\WPF\.NET. Here is his <a href="https://blog.walterlv.com/" target="_blank" rel="noopener">Blog</a>.</p>
+</blockquote>
 <h3 id="Where-can-we-choose-the-correct-Main-method"><a href="#Where-can-we-choose-the-correct-Main-method" class="headerlink" title="Where can we choose the correct Main method."></a>Where can we choose the correct <code>Main</code> method.</h3><p>At the project which has <code>Main</code> method, the steps are listed below :<br><em>Right click (show menu items)-&gt;Properties-&gt;Application-&gt;Startup object</em> . As we can see,the default value of <em>startup object</em> is <em>Not set</em>.<br><img src="/2019/05/10/Write-multiple-Main-methods-and-you-can-switch-to-the-one-you-want/2018-10-09-17-54-01.png" alt></p>
 <h3 id="Choose-the-correct-Main-method"><a href="#Choose-the-correct-Main-method" class="headerlink" title="Choose the correct Main method."></a>Choose the correct <code>Main</code> method.</h3><p>If there are mutiple <code>Main</code> methods, and we don’t select a value at <em>Startup object</em> (the value is “Not set”), we will get an error when we compile these codes.<br><img src="/2019/05/10/Write-multiple-Main-methods-and-you-can-switch-to-the-one-you-want/2018-10-09-18-00-40.png" alt><br>Here is the message of the compile error.</p>
 <blockquote>
@@ -344,7 +488,7 @@
 <p>We can se that it add some judgement code in this <code>.csproj</code>, it can run deffirent <code>.xaml.cs</code> files depend on the value of <code>$(StartupObject)</code>.<br>Base on the above, we have different <code>.xaml.cs</code> file for different value of <em>Startup Object</em>. We can write different codes in these two files.<br>For example,the code in <code>App.new.xaml.cs</code> are as followed<br><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Windows;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">Walterlv.Demo</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">partial</span> <span class="keyword">class</span> <span class="title">App</span> : <span class="title">Application</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="function"><span class="keyword">protected</span> <span class="keyword">override</span> <span class="keyword">void</span> <span class="title">OnStartup</span>(<span class="params">StartupEventArgs e</span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            <span class="keyword">var</span> window = <span class="keyword">new</span> MainWindow</span><br><span class="line">            &#123;</span><br><span class="line">                Title = <span class="string">"New Walterlv Demo"</span>,</span><br><span class="line">            &#125;;</span><br><span class="line">            window.Show();</span><br><span class="line"></span><br><span class="line">            <span class="keyword">base</span>.OnStartup(e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>They are different with the codes in <code>App.xaml.cs</code>,we change the title of window in these code.<br><img src="/2019/05/10/Write-multiple-Main-methods-and-you-can-switch-to-the-one-you-want/2018-10-09-20-19-57.png" alt></p>
 <h3 id="Replace-files-with-conditional-compilers"><a href="#Replace-files-with-conditional-compilers" class="headerlink" title="Replace files with conditional compilers"></a>Replace files with conditional compilers</h3><p>If there are just a little differences among your startup processes in your project,you can use conditional compiler to replace files.<br><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;PropertyGroup Condition=<span class="string">" '$(StartupObject)' == 'Walterlv.Demo.Program' "</span>&gt;</span><br><span class="line">  &lt;DefineConstants&gt;$(DefineConstants);OLD&lt;/DefineConstants&gt;</span><br><span class="line">&lt;/PropertyGroup&gt;</span><br><span class="line">&lt;PropertyGroup Condition=<span class="string">" '$(StartupObject)' == 'Walterlv.Demo.NewProgram' "</span>&gt;</span><br><span class="line">  &lt;DefineConstants&gt;$(DefineConstants);NEW&lt;/DefineConstants&gt;</span><br><span class="line">&lt;/PropertyGroup&gt;</span><br></pre></td></tr></table></figure></p>
-<p>Currently,you can use coditional compilers to control your startup processes.<br><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Windows;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">namespace</span> <span class="title">Walterlv.Demo</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">partial</span> <span class="keyword">class</span> <span class="title">App</span> : <span class="title">Application</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="function"><span class="keyword">protected</span> <span class="keyword">override</span> <span class="keyword">void</span> <span class="title">OnStartup</span>(<span class="params">StartupEventArgs e</span>)</span></span><br><span class="line"><span class="function"></span>            &#123;</span><br><span class="line">                <span class="keyword">var</span> window = <span class="keyword">new</span> MainWindow()</span><br><span class="line">+   <span class="meta">#<span class="meta-keyword">if</span> NEW</span></span><br><span class="line">                &#123;</span><br><span class="line">                    Title = <span class="string">"New Walterlv Demo"</span>,</span><br><span class="line">                &#125;;</span><br><span class="line">+   <span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">                window.Show();</span><br><span class="line"></span><br><span class="line">                <span class="keyword">base</span>.OnStartup(e);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>Currently,you can use coditional compilers to control your startup processes.<br><figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">using System.Windows;</span><br><span class="line"></span><br><span class="line">    namespace Walterlv.Demo</span><br><span class="line">    &#123;</span><br><span class="line">        public partial class App : Application</span><br><span class="line">        &#123;</span><br><span class="line">            protected override void OnStartup(StartupEventArgs e)</span><br><span class="line">            &#123;</span><br><span class="line">                var window = new MainWindow()</span><br><span class="line"><span class="addition">+   #if NEW</span></span><br><span class="line">                &#123;</span><br><span class="line">                    Title = "New Walterlv Demo",</span><br><span class="line">                &#125;;</span><br><span class="line"><span class="addition">+   #endif</span></span><br><span class="line">                window.Show();</span><br><span class="line"></span><br><span class="line">                base.OnStartup(e);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
 
           
         
@@ -465,7 +609,9 @@
         
           
             <h4 id="During-the-development-of-windows-application-you-can-operate-other-windows-by-enumerating-windows-with-EnumWindows"><a href="#During-the-development-of-windows-application-you-can-operate-other-windows-by-enumerating-windows-with-EnumWindows" class="headerlink" title="During the development of windows application, you can operate other windows by enumerating windows with EnumWindows."></a>During the development of windows application, you can operate other windows by enumerating windows with <code>EnumWindows</code>.</h4><hr>
-<h2 id="Details"><a href="#Details" class="headerlink" title="Details"></a>Details</h2><p>The original link is <a href="https://blog.walterlv.com/post/find-specific-window-by-enum-windows.html#enumwindows" title="source" target="_blank" rel="noopener">使用 EnumWindows 找到满足你要求的窗口 - walterlv</a>. But that blog was written in Chinese, so I translate the content to English. Waterlv is a MVP(Microsoft Most Valuable Professional),and he is good at .NET Core\WPF\.NET. Here is his <a href="https://blog.walterlv.com/" target="_blank" rel="noopener">Blog</a>.</p>
+<h2 id="Details"><a href="#Details" class="headerlink" title="Details"></a>Details</h2><blockquote>
+<p>The original link is <a href="https://blog.walterlv.com/post/find-specific-window-by-enum-windows.html#enumwindows" title="source" target="_blank" rel="noopener">使用 EnumWindows 找到满足你要求的窗口 - walterlv</a>. But that blog was written in Chinese, so I translate the content to English. Waterlv is a MVP(Microsoft Most Valuable Professional),and he is good at .NET Core\WPF\.NET. Here is his <a href="https://blog.walterlv.com/" target="_blank" rel="noopener">Blog</a>.</p>
+</blockquote>
 <h2 id="EnumWindows"><a href="#EnumWindows" class="headerlink" title="EnumWindows"></a><code>EnumWindows</code></h2><p>You can get more details about <code>EnumWindows</code> from Microsoft website.</p>
 <p>Before you use <code>EnumWindows</code> with <code>C#</code> , you have to write a platform to call the P/Invoke method. </p>
 <p>Like this:</p>
@@ -698,7 +844,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-count">4</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>

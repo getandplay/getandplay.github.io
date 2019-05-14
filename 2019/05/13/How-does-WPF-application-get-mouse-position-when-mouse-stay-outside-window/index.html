@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="English">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="translate,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="IntroductionAs we all known, we have two methods to get the mouse position which is relatived to other controls. One is Mouse.GetPosition(IInputElement relativeTo) , the other is MouseEventArgs.GetPos">
+<meta name="keywords" content="translate">
+<meta property="og:type" content="article">
+<meta property="og:title" content="How does WPF application get mouse position when mouse is outside window?">
+<meta property="og:url" content="http://yoursite.com/2019/05/13/How-does-WPF-application-get-mouse-position-when-mouse-stay-outside-window/index.html">
+<meta property="og:site_name" content="Neal&#39;s Blog">
+<meta property="og:description" content="IntroductionAs we all known, we have two methods to get the mouse position which is relatived to other controls. One is Mouse.GetPosition(IInputElement relativeTo) , the other is MouseEventArgs.GetPos">
+<meta property="og:locale" content="English">
+<meta property="og:image" content="http://yoursite.com/2019/05/13/How-does-WPF-application-get-mouse-position-when-mouse-stay-outside-window/2019-04-30-mouse-get-position.gif">
+<meta property="og:image" content="http://yoursite.com/2019/05/13/How-does-WPF-application-get-mouse-position-when-mouse-stay-outside-window/2019-04-30-14-41-36.png">
+<meta property="og:updated_time" content="2019-05-14T01:27:56.056Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="How does WPF application get mouse position when mouse is outside window?">
+<meta name="twitter:description" content="IntroductionAs we all known, we have two methods to get the mouse position which is relatived to other controls. One is Mouse.GetPosition(IInputElement relativeTo) , the other is MouseEventArgs.GetPos">
+<meta name="twitter:image" content="http://yoursite.com/2019/05/13/How-does-WPF-application-get-mouse-position-when-mouse-stay-outside-window/2019-04-30-mouse-get-position.gif">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","Sidebar Display, available value (only for Muse | Mist)":["always  expand for all pages automatically"],"display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/05/13/How-does-WPF-application-get-mouse-position-when-mouse-stay-outside-window/">
+
+
+
+
+
+  <title>How does WPF application get mouse position when mouse is outside window? | Neal's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="English">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Neal's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/13/How-does-WPF-application-get-mouse-position-when-mouse-stay-outside-window/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Neal chen">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/badboy.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Neal's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">How does WPF application get mouse position when mouse is outside window?</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-05-13T17:06:07-06:00">
+                2019-05-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h4 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h4><p>As we all known, we have two methods to get the mouse position which is relatived to other controls. One is <code>Mouse.GetPosition(IInputElement relativeTo)</code> , the other is <code>MouseEventArgs.GetPosition(IInputElement relativeTo)</code>. But, what will we get when the mouse is outside the window’s client area? And how does it calculate?</p>
+<p>This article is to tell developers about <em>what and how we get the mouse coordinate.</em></p>
+<hr>
+<h3 id="Detail"><a href="#Detail" class="headerlink" title="Detail"></a>Detail</h3><blockquote>
+<p>The original link is <a href="https://blog.walterlv.com/post/wpf-mouse-position-when-mouse-is-out-of-window.html" title="source" target="_blank" rel="noopener">WPF 程序鼠标在窗口之外的时候，控件拿到的鼠标位置在哪里？ - walterlv</a>. But that blog was written in Chinese, so I translate the content to English. Waterlv is a MVP(Microsoft Most Valuable Professional),and he is good at .NET Core\WPF\.NET. Here is his <a href="https://blog.walterlv.com/" target="_blank" rel="noopener">Blog</a>.</p>
+</blockquote>
+<hr>
+<h3 id="Demo"><a href="#Demo" class="headerlink" title="Demo"></a>Demo</h3><p>Creates a default WPF application with Visual Stuio 2019.And this application is developed with default .NET Core version,it contains a <code>Button</code> and <code>Textblock</code>. Now, we try to get mouse position relative to these two <code>FrameworkElement</code> with <code>Mouse.GetPosition</code> method. Here is the codes.</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Windows;</span><br><span class="line"><span class="keyword">using</span> System.Windows.Input;</span><br><span class="line"><span class="keyword">using</span> System.Windows.Media;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">Walterlv.Demo</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">partial</span> <span class="keyword">class</span> <span class="title">MainWindow</span> : <span class="title">Window</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">MainWindow</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            InitializeComponent();</span><br><span class="line">            CompositionTarget.Rendering += OnRendering; </span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">OnRendering</span>(<span class="params"><span class="keyword">object</span> sender, EventArgs e</span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            DebugTextBlock.Text = Mouse.GetPosition(DebugTextBlock).ToString();</span><br><span class="line">            DebugButton.Content = Mouse.GetPosition(DebugButton).ToString();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Observation"><a href="#Observation" class="headerlink" title="Observation"></a>Observation</h3><p>We runed this simple application, then we noticed that when the mouse is outsilde window’s client area,the values of mouse position are exactly the same. See this .gif file below for more details.<br><img src="/2019/05/13/How-does-WPF-application-get-mouse-position-when-mouse-stay-outside-window/2019-04-30-mouse-get-position.gif" alt></p>
+<p>For more informations about <em>Client Area</em>,visit<br> <a href="https://blog.walterlv.com/post/wpf-simulate-native-window-style-using-window-chrome.html" target="_blank" rel="noopener">WPF 使用 WindowChrome，在自定义窗口标题栏的同时最大程度保留原生窗口样式（类似 UWP/Chrome）</a>.<br> This blog was written in Chinese. I will translate it later.</p>
+<h3 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h3><p>We can get a conclusion from the messages applied above, the coordinate we get when the mouse is outsilde window client area is screen’s left top position <code>(0,0)</code> .</p>
+<p>We moved the window to screen’s left top position to check our conclusion. And then we got the coordinate of outside mouse position, and the value is <code>(0,31)</code>.</p>
+<blockquote>
+<p>It should note that <code>31</code> is the height of window’s title bar.</p>
+</blockquote>
+<p><img src="/2019/05/13/How-does-WPF-application-get-mouse-position-when-mouse-stay-outside-window/2019-04-30-14-41-36.png" alt></p>
+<p>It shows that the conclusion is right. So, how does <code>GetPosition</code> work?</p>
+<h3 id="Theory"><a href="#Theory" class="headerlink" title="Theory"></a>Theory</h3><p>After reading the source code of <code>GetPosition</code> method. It is easily to find that it get the coordinate depends on <code>ClientToScreen</code> API.<br>Here is the source codes.<br><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">SecurityCritical, SecurityTreatAsSafe</span>]</span><br><span class="line"><span class="function"><span class="keyword">internal</span> Point <span class="title">GetScreenPositionFromSystem</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// Win32 has issues reliably returning where the mouse is.  Until we figure</span></span><br><span class="line">    <span class="comment">// out a better way, just return the last mouse position in screen coordinates.</span></span><br><span class="line"></span><br><span class="line">    Point ptScreen = <span class="keyword">new</span> Point(<span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Security Mitigation: do not give out input state if the device is not active.</span></span><br><span class="line">    <span class="keyword">if</span> (IsActive)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">            PresentationSource activeSource = CriticalActiveSource;</span><br><span class="line">            <span class="keyword">if</span> (activeSource != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                ptScreen = PointUtil.ClientToScreen(_lastPosition, activeSource);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span> (System.ComponentModel.Win32Exception)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// The window could be shutting down, so just return (0,0).</span></span><br><span class="line">            ptScreen = <span class="keyword">new</span> Point(<span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> ptScreen;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">SecurityCritical, SecurityTreatAsSafe</span>]</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Point <span class="title">ClientToScreen</span>(<span class="params">Point pointClient, PresentationSource presentationSource</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// For now we only know how to use HwndSource.</span></span><br><span class="line">    HwndSource inputSource = presentationSource <span class="keyword">as</span> HwndSource;</span><br><span class="line">    <span class="keyword">if</span>(inputSource == <span class="literal">null</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> pointClient;</span><br><span class="line">    &#125;</span><br><span class="line">    HandleRef handleRef = <span class="keyword">new</span> HandleRef(inputSource, inputSource.CriticalHandle);</span><br><span class="line"></span><br><span class="line">    NativeMethods.POINT ptClient            = FromPoint(pointClient);</span><br><span class="line">    NativeMethods.POINT ptClientRTLAdjusted = AdjustForRightToLeft(ptClient, handleRef);</span><br><span class="line"></span><br><span class="line">    UnsafeNativeMethods.ClientToScreen(handleRef, ptClientRTLAdjusted);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> ToPoint(ptClientRTLAdjusted);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>And here is the defination of <code>ClientToScreen</code> method in <code>user32.dll</code>.<br><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">DllImport(<span class="meta-string">"user32.dll"</span>)</span>]</span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">extern</span> <span class="keyword">bool</span> <span class="title">ClientToScreen</span>(<span class="params">IntPtr hWnd, <span class="keyword">ref</span> Point lpPoint</span>)</span>;</span><br></pre></td></tr></table></figure></p>
+<p>This method requires a window handle <code>hWnd</code> as a paramer,and its usage is listed bellow.</p>
+<blockquote>
+<p>A handle to the window whose client area is used for the conversion.</p>
+</blockquote>
+<p>Essentially, we use <code>ClientToScreen</code> method to get mouse’s coordinate. And  this methods will return two different results:</p>
+<blockquote>
+<ul>
+<li>If the function succeeds, the return value is nonzero.</li>
+<li>If the function fails, the return value is zero.</li>
+</ul>
+</blockquote>
+<p>So, this function fails when mouse position is outside the window client area.And <code>ClientToScreen</code> returns (0,0) as result. Then, it will run <code>ToPoint</code> method to translate the coordinate to relative control’s <em>coordinate system</em>. And that is the result we saw.</p>
+<h3 id="References"><a href="#References" class="headerlink" title="References"></a>References</h3><ul>
+<li><a href="https://stackoverflow.com/a/4232281/6233938" target="_blank" rel="noopener">How do I get the current mouse screen coordinates in WPF? - Stack Overflow</a></li>
+<li><a href="https://www.pinvoke.net/default.aspx/user32.clienttoscreen" target="_blank" rel="noopener">pinvoke.net: clienttoscreen (user32)</a></li>
+<li><a href="https://stackoverflow.com/q/34534279/6233938" target="_blank" rel="noopener">c# - ClientToScreen unexpected return values? - Stack Overflow</a></li>
+<li><a href="https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-clienttoscreen" target="_blank" rel="noopener">ClientToScreen function (winuser.h) - Microsoft Docs</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/translate/" rel="tag"># translate</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/05/12/Lesser-known-technologies-in-Xaml/" rel="next" title="Lesser known technologies in Xaml">
+                <i class="fa fa-chevron-left"></i> Lesser known technologies in Xaml
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/badboy.jpg" alt="Neal chen">
+            
+              <p class="site-author-name" itemprop="name">Neal chen</p>
+              <p class="site-description motion-element" itemprop="description">.NET core\WPF\.NET</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:chentianlong0608@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#Introduction"><span class="nav-number">1.</span> <span class="nav-text">Introduction</span></a></li></ol><li class="nav-item nav-level-3"><a class="nav-link" href="#Detail"><span class="nav-number"></span> <span class="nav-text">Detail</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Demo"><span class="nav-number"></span> <span class="nav-text">Demo</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Observation"><span class="nav-number"></span> <span class="nav-text">Observation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Conclusion"><span class="nav-number"></span> <span class="nav-text">Conclusion</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Theory"><span class="nav-number"></span> <span class="nav-text">Theory</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#References"><span class="nav-number"></span> <span class="nav-text">References</span></a></li></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Neal chen</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

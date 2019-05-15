@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="English">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="IntroductionThere are some methods to release current thread excution right in .NET/C#. They are Thread.Sleep(0),Task.Delay(0),Thread.Yield(),Task.Yeild().The function of these methods is to tell the">
+<meta property="og:type" content="article">
+<meta property="og:title" content="The usages and suggestions about Thead.Sleep(0),Task.Delay(0),Thread.Yield(),Task.Yield()">
+<meta property="og:url" content="http://yoursite.com/2019/05/14/The-usages-and-suggestions-about-Thead-Sleep-0-Task-Delay-0-Thread-Yield-Task-Yield-functions/index.html">
+<meta property="og:site_name" content="Neal&#39;s Blog">
+<meta property="og:description" content="IntroductionThere are some methods to release current thread excution right in .NET/C#. They are Thread.Sleep(0),Task.Delay(0),Thread.Yield(),Task.Yeild().The function of these methods is to tell the">
+<meta property="og:locale" content="English">
+<meta property="og:image" content="http://yoursite.com/2019/05/14/The-usages-and-suggestions-about-Thead-Sleep-0-Task-Delay-0-Thread-Yield-Task-Yield-functions/2018-11-27-11-10-43.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/14/The-usages-and-suggestions-about-Thead-Sleep-0-Task-Delay-0-Thread-Yield-Task-Yield-functions/2018-11-27-12-51-30.png">
+<meta property="og:updated_time" content="2019-05-15T17:52:50.511Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="The usages and suggestions about Thead.Sleep(0),Task.Delay(0),Thread.Yield(),Task.Yield()">
+<meta name="twitter:description" content="IntroductionThere are some methods to release current thread excution right in .NET/C#. They are Thread.Sleep(0),Task.Delay(0),Thread.Yield(),Task.Yeild().The function of these methods is to tell the">
+<meta name="twitter:image" content="http://yoursite.com/2019/05/14/The-usages-and-suggestions-about-Thead-Sleep-0-Task-Delay-0-Thread-Yield-Task-Yield-functions/2018-11-27-11-10-43.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","Sidebar Display, available value (only for Muse | Mist)":["always  expand for all pages automatically"],"display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/05/14/The-usages-and-suggestions-about-Thead-Sleep-0-Task-Delay-0-Thread-Yield-Task-Yield-functions/">
+
+
+
+
+
+  <title>The usages and suggestions about Thead.Sleep(0),Task.Delay(0),Thread.Yield(),Task.Yield() | Neal's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="English">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Neal's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/14/The-usages-and-suggestions-about-Thead-Sleep-0-Task-Delay-0-Thread-Yield-Task-Yield-functions/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Neal chen">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/badboy.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Neal's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">The usages and suggestions about Thead.Sleep(0),Task.Delay(0),Thread.Yield(),Task.Yield()</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-05-14T18:44:07-06:00">
+                2019-05-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h3><p>There are some methods to release current thread excution right in .NET/C#. They are <code>Thread.Sleep(0)</code>,<code>Task.Delay(0)</code>,<code>Thread.Yield()</code>,<code>Task.Yeild()</code>.The function of these methods is to tell the program to give up current thread and then run another thread.But there are some differences among these methods.</p>
+<p>This article is about their differences and theories.</p>
+<hr>
+<h3 id="Detail"><a href="#Detail" class="headerlink" title="Detail"></a>Detail</h3><blockquote>
+<p>The original link is <a href="https://blog.walterlv.com/post/sleep-delay-zero-vs-yield.html" target="_blank" rel="noopener">C#/.NET 中 Thread.Sleep(0), Task.Delay(0), Thread.Yield(), Task.Yield() 不同的执行效果和用法建议</a>. But this blog was written in Chinese, so I translate its content to English. Waterlv is a MVP(Microsoft Most Valuable Professional),and he is good at .NET Core\WPF\.NET. Here is his <a href="https://blog.walterlv.com/" target="_blank" rel="noopener">Blog</a>.</p>
+</blockquote>
+<hr>
+<h3 id="Theories"><a href="#Theories" class="headerlink" title="Theories"></a>Theories</h3><h4 id="Thread-Sleep-0"><a href="#Thread-Sleep-0" class="headerlink" title="Thread.Sleep(0)"></a>Thread.Sleep(0)</h4><p>Firstly,I will post the source code of <code>Thread.Spleep(int millisecondsTimeout)</code>.<br><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*=========================================================================</span></span><br><span class="line"><span class="comment">** Suspends the current thread for timeout milliseconds. If timeout == 0,</span></span><br><span class="line"><span class="comment">** forces the thread to give up the remainer of its timeslice.  If timeout</span></span><br><span class="line"><span class="comment">** == Timeout.Infinite, no timeout will occur.</span></span><br><span class="line"><span class="comment">**</span></span><br><span class="line"><span class="comment">** Exceptions: ArgumentException if timeout &lt; 0.</span></span><br><span class="line"><span class="comment">**             ThreadInterruptedException if the thread is interrupted while sleeping.</span></span><br><span class="line"><span class="comment">=========================================================================*/</span></span><br><span class="line">[<span class="meta">System.Security.SecurityCritical</span>]  <span class="comment">// auto-generated</span></span><br><span class="line">[<span class="meta">ResourceExposure(ResourceScope.None)</span>]</span><br><span class="line">[<span class="meta">MethodImplAttribute(MethodImplOptions.InternalCall)</span>]</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">extern</span> <span class="keyword">void</span> <span class="title">SleepInternal</span>(<span class="params"><span class="keyword">int</span> millisecondsTimeout</span>)</span>;</span><br><span class="line"></span><br><span class="line">[<span class="meta">System.Security.SecuritySafeCritical</span>]  <span class="comment">// auto-generated</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Sleep</span>(<span class="params"><span class="keyword">int</span> millisecondsTimeout</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    SleepInternal(millisecondsTimeout);</span><br><span class="line">    <span class="comment">// Ensure we don't return to app code when the pause is underway</span></span><br><span class="line">    <span class="keyword">if</span>(AppDomainPauseManager.IsPaused)</span><br><span class="line">        AppDomainPauseManager.ResumeEvent.WaitOneWithoutFAS();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>It is easily to find that in <code>Sleep</code> method it call another method which’s name is <code>SleepInternal</code>. <code>SleepInternal</code> is implemented in <em>CLR</em>, and its function is suspending current thread for the value of <code>millisecondsTimeout</code>.</p>
+<p>If we set the value of <code>milliseconsTimeout</code> to 0 as <code>Thread.Sleep(0)</code>.It will force current thread to give up rest of <em>CPU</em> time slice.Then other threads which have higher priority will run. But if there are not any available threads have highter prority than current thread, this thread will keep running.</p>
+<p>If your method will not be affected by other threads, there are not any differences among above methods. But when your method is affected by mutilple threads, other thread may run into this method when you call <code>Thread.Sleep(0)</code>.But it is a good news that the <em>CPU</em> time slice for a thread is nanosecond level, so this situation is almost impossible to happen.</p>
+<h4 id="Thread-Yeild"><a href="#Thread-Yeild" class="headerlink" title="Thread.Yeild()"></a>Thread.Yeild()</h4><p>Here is the source code of <code>Thread.Yeild()</code><br><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">System.Security.SecurityCritical</span>]  <span class="comment">// auto-generated</span></span><br><span class="line">[<span class="meta">ResourceExposure(ResourceScope.None)</span>]</span><br><span class="line">[<span class="meta">DllImport(JitHelpers.QCall, CharSet = CharSet.Unicode)</span>]</span><br><span class="line">[<span class="meta">SuppressUnmanagedCodeSecurity</span>]</span><br><span class="line">[<span class="meta">HostProtection(Synchronization = true, ExternalThreading = true),</span></span><br><span class="line"><span class="meta">    ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)</span>]</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">extern</span> <span class="keyword">bool</span> <span class="title">YieldInternal</span>(<span class="params"></span>)</span>;</span><br><span class="line"></span><br><span class="line">[<span class="meta">System.Security.SecuritySafeCritical</span>]  <span class="comment">// auto-generated</span></span><br><span class="line">[<span class="meta">HostProtection(Synchronization = true, ExternalThreading = true),</span></span><br><span class="line"><span class="meta">    ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)</span>]</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">bool</span> <span class="title">Yield</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> YieldInternal();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>And we can notice that <code>Yield()</code> method calls <code>YieldInternal()</code> method. And <code>YieldInternal</code> is implemented in <em>CLR</em> too.</p>
+<p>The function of <code>Thread.Yeild()</code> is forcing current thread to give up the rest of <em>CPU</em> time slice, the same as <code>Thread.Sleep(0)</code>.</p>
+<h4 id="Thread-Sleep-1"><a href="#Thread-Sleep-1" class="headerlink" title="Thread.Sleep(1)"></a>Thread.Sleep(1)</h4><p>It is just a little differance between <code>Thread.Sleep(1)</code> and <code>Thread.Sleep(0)</code>, but their functions are different.</p>
+<p>Current thread will be suspendd for timeout milliseconds(It is 1ms). Therefore, during timeout milliseconds current thread will stay at the unschedulable state. So, the threads will be runned even their prority is lower than current thread.</p>
+<p>Here is the result of these three method’s excution time.<br><img src="/2019/05/14/The-usages-and-suggestions-about-Thead-Sleep-0-Task-Delay-0-Thread-Yield-Task-Yield-functions/2018-11-27-11-10-43.png" alt></p>
+<p><code>Nothing</code> means there are not any codes. And we used <code>Stopwatch</code> to get the result. For more detail about <code>Stopwatch</code> visit <a href="https://blog.walterlv.com/post/dotnet-high-precision-performance-counting.html" target="_blank" rel="noopener">.NET/C# 在代码中测量代码执行耗时的建议（比较系统性能计数器和系统时间）</a>. This blog was written in Chinese, I will translate it later.<br>Here is a part of codes.</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> stopwatch = Stopwatch.StartNew();</span><br><span class="line">Thread.Sleep(<span class="number">0</span>);</span><br><span class="line"><span class="keyword">var</span> elapsed = stopwatch.Elapsed;</span><br><span class="line">Console.WriteLine(<span class="string">$"Thread.Sleep(0) : <span class="subst">&#123;elapsed&#125;</span>"</span>);</span><br></pre></td></tr></table></figure>
+<h4 id="Task-Delay-0"><a href="#Task-Delay-0" class="headerlink" title="Task.Delay(0)"></a>Task.Delay(0)</h4><p><code>Task.Delay</code> is a method of <em>TAP</em>. For more informations about <em>TAP</em>,visit <a href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/task-based-asynchronous-pattern-tap?wt.mc_id=MVP" target="_blank" rel="noopener">Task-based Asynchronous Pattern (TAP) Microsoft Docs</a></p>
+<p><em>TAP</em> is a threading model whiche base on async state machine, and this is the biggest difference from <code>Thread</code> method.</p>
+<p>Here is the source code of <code>Task.Delay</code>.</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> Creates a Task that will complete after a time delay.</span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="millisecondsDelay"&gt;</span>The number of milliseconds to wait before completing the returned Task<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="cancellationToken"&gt;</span>The cancellation token that will be checked prior to completing the returned Task<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;returns&gt;</span>A Task that represents the time delay<span class="doctag">&lt;/returns&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;exception cref="T:System.ArgumentOutOfRangeException"&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> The <span class="doctag">&lt;paramref name="millisecondsDelay"/&gt;</span> is less than -1.</span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/exception&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;exception cref="T:System.ObjectDisposedException"&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> The provided <span class="doctag">&lt;paramref name="cancellationToken"/&gt;</span> has already been disposed.</span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/exception&gt;</span>        </span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;remarks&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> If the cancellation token is signaled before the specified time delay, then the Task is completed in</span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> Canceled state.  Otherwise, the Task is completed in RanToCompletion state once the specified time</span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> delay has expired.</span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/remarks&gt;</span>        </span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Task <span class="title">Delay</span>(<span class="params"><span class="keyword">int</span> millisecondsDelay, CancellationToken cancellationToken</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// Throw on non-sensical time</span></span><br><span class="line">    <span class="keyword">if</span> (millisecondsDelay &lt; <span class="number">-1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ArgumentOutOfRangeException(<span class="string">"millisecondsDelay"</span>, Environment.GetResourceString(<span class="string">"Task_Delay_InvalidMillisecondsDelay"</span>));</span><br><span class="line">    &#125;</span><br><span class="line">    Contract.EndContractBlock();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// some short-cuts in case quick completion is in order</span></span><br><span class="line">    <span class="keyword">if</span> (cancellationToken.IsCancellationRequested)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// return a Task created as already-Canceled</span></span><br><span class="line">        <span class="keyword">return</span> Task.FromCancellation(cancellationToken);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (millisecondsDelay == <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// return a Task created as already-RanToCompletion</span></span><br><span class="line">        <span class="keyword">return</span> Task.CompletedTask;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Construct a promise-style Task to encapsulate our return value</span></span><br><span class="line">    <span class="keyword">var</span> promise = <span class="keyword">new</span> DelayPromise(cancellationToken);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Register our cancellation token, if necessary.</span></span><br><span class="line">    <span class="keyword">if</span> (cancellationToken.CanBeCanceled)</span><br><span class="line">    &#123;</span><br><span class="line">        promise.Registration = cancellationToken.InternalRegisterWithoutEC(state =&gt; ((DelayPromise)state).Complete(), promise);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ... and create our timer and make sure that it stays rooted.</span></span><br><span class="line">    <span class="keyword">if</span> (millisecondsDelay != Timeout.Infinite) <span class="comment">// no need to create the timer if it's an infinite timeout</span></span><br><span class="line">    &#123;</span><br><span class="line">        promise.Timer = <span class="keyword">new</span> Timer(state =&gt; ((DelayPromise)state).Complete(), promise, millisecondsDelay, Timeout.Infinite);</span><br><span class="line">        promise.Timer.KeepRootedWhileScheduled();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Return the timer proxy task</span></span><br><span class="line">    <span class="keyword">return</span> promise;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>This method will return <code>Task.CompleteTask</code> as result when the value of parameter is <code>0</code>. That means the code you write after <code>Task.Delay(0)</code> will be excuted immediately.(If the rest of <em>CPU</em> time slice is enough).</p>
+<h4 id="Task-Yield"><a href="#Task-Yield" class="headerlink" title="Task.Yield()"></a>Task.Yield()</h4><p>The result of <code>Task.Yield()</code> is a <code>YeildAwaitable</code> instance , and the <code>YieldAwaitable.GetAwaiter</code> method returns a instance of <code>YieldAwaiter</code>. So, the result of <code>Task.Yield</code> method is fully depending on <code>YieldAwaiter</code>. For more details about <code>Awaiter</code> visit <a href="https://blog.walterlv.com/post/write-custom-awaiter.html" target="_blank" rel="noopener">如何实现一个可以用 await 异步等待的 Awaiter</a>.</p>
+<p><code>YieldAwaiter</code> relies on <code>QueueContinuation</code> to determin when to excute subsequent codes. Part of source codes are listed below.</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Get the current SynchronizationContext, and if there is one,</span></span><br><span class="line"><span class="comment">// post the continuation to it.  However, treat the base type</span></span><br><span class="line"><span class="comment">// as if there wasn't a SynchronizationContext, since that's what it</span></span><br><span class="line"><span class="comment">// logically represents.</span></span><br><span class="line"><span class="keyword">var</span> syncCtx = SynchronizationContext.CurrentNoFlow;</span><br><span class="line"><span class="keyword">if</span> (syncCtx != <span class="literal">null</span> &amp;&amp; syncCtx.GetType() != <span class="keyword">typeof</span>(SynchronizationContext))</span><br><span class="line">&#123;</span><br><span class="line">    syncCtx.Post(s_sendOrPostCallbackRunAction, continuation);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// If we're targeting the default scheduler, queue to the thread pool, so that we go into the global</span></span><br><span class="line">    <span class="comment">// queue.  As we're going into the global queue, we might as well use QUWI, which for the global queue is</span></span><br><span class="line">    <span class="comment">// just a tad faster than task, due to a smaller object getting allocated and less work on the execution path.</span></span><br><span class="line">    TaskScheduler scheduler = TaskScheduler.Current;</span><br><span class="line">    <span class="keyword">if</span> (scheduler == TaskScheduler.Default)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (flowContext)</span><br><span class="line">        &#123;</span><br><span class="line">            ThreadPool.QueueUserWorkItem(s_waitCallbackRunAction, continuation);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            ThreadPool.UnsafeQueueUserWorkItem(s_waitCallbackRunAction, continuation);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// We're targeting a custom scheduler, so queue a task.</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        Task.Factory.StartNew(continuation, <span class="keyword">default</span>(CancellationToken), TaskCreationOptions.PreferFairness, scheduler);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>There are two branches in these codes.</p>
+<ol>
+<li><p>One is setting <code>DispatcherSynchronizationContext</code> as the value of <code>SynchronizationContext</code> , then it will call <code>Post</code> method in <code>SynchronizationContext</code> to excute next asynchronous task. The ‘continuation’ means excutes next asynchronous task.<br>The value of <code>SynchronizationContext</code> is setted as <code>DispatcherSynchronizationContext</code> for WPF UI thread, and its <code>Post</code> method is designed to implement message loop. If other threads have no special setting, the value of <code>SynchronizationContext</code> is <code>null</code>. For more informations,see <a href="https://blog.walterlv.com/post/yield-in-task-dispatcher.html" target="_blank" rel="noopener">出让执行权：Task.Yield, Dispatcher.Yield</a>.</p>
+</li>
+<li><p>The other is the value of <code>DispacherSynchronizationContext</code> is <code>null</code> or <code>SynchronizationContext</code> type, the code will run <code>else</code> logic. And its logic is depends on the value of <code>TaskScheduler.Current</code>,maybe it will find next tread in thread pool or start a <code>Task</code> again.</p>
+</li>
+</ol>
+<h4 id="Task-Delay-1"><a href="#Task-Delay-1" class="headerlink" title="Task.Delay(1)"></a>Task.Delay(1)</h4><p><code>Task.Delay(1)</code> is almost the same as <code>Task.Delay(1)</code>, but the function of these two codes is different.</p>
+<p><code>Task.Delay(1)</code> starts a <code>System.Threading.Timer</code> instance, and it will describe a callback method which is excuted when time is up.</p>
+<p>Here is the exact API order to excute the callback</p>
+<blockquote>
+<p> <code>Timer.TimerSetup</code>-&gt;<code>TimerHolder</code>-&gt;<code>TimerQueueTimer</code>-&gt;<code>TimerQueue.UpdateTimer</code>-&gt;<code>EnsureAppDomainTimerFiresBy</code>-&gt;<code>ChangeAppDomainTimer</code>-&gt;<code>callback</code></p>
+</blockquote>
+<p>The codes after <code>await</code> will be encapsulated by the asynchronous state machine and passed to the callback above.</p>
+<p>Here is the code of <code>ChangeAppDomainTimer</code> method.<br><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">System.Security.SecurityCritical</span>]</span><br><span class="line">[<span class="meta">ResourceExposure(ResourceScope.None)</span>]</span><br><span class="line">[<span class="meta">DllImport(JitHelpers.QCall, CharSet = CharSet.Unicode)</span>]</span><br><span class="line">[<span class="meta">SuppressUnmanagedCodeSecurity</span>]</span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">extern</span> <span class="keyword">bool</span> <span class="title">ChangeAppDomainTimer</span>(<span class="params">AppDomainTimerSafeHandle handle, <span class="keyword">uint</span> dueTime</span>)</span>;</span><br></pre></td></tr></table></figure></p>
+<p>And when we call the methods in <code>Thread</code>, they just affect the sheduling status of current thread. But when we call the methods in <code>Task</code>, they will affect the sheduling of thread pool, then they will call <code>System.Threading.Timer</code> to count time, the time they will consume is uncontrollable.<br>Here is the result for the time they consumed.<br><img src="/2019/05/14/The-usages-and-suggestions-about-Thead-Sleep-0-Task-Delay-0-Thread-Yield-Task-Yield-functions/2018-11-27-12-51-30.png" alt></p>
+<p><code>Nothing</code> means there are not any codes.</p>
+<h3 id="Differences"><a href="#Differences" class="headerlink" title="Differences"></a>Differences</h3><p>The function of <code>Thread.Sleep(0)</code> and <code>Thread.Yield()</code> are the same in thread scheduling. <code>Thread.Sleep(int)</code> is waiting for time out and it bases on <code>thread scheduling</code>. </p>
+<p><code>Thread.Sleep(0)</code> and <code>Thread.Yield()</code> can be used for giving up current thread’s rest time slice, and give chance to run other threads. If you want to make your thread wait , you can call <code>Thead.Sleep(int)</code>.</p>
+<p>If you have to use <code>async/await</code> , you should use <code>Task.Delay(0)</code> or <code>Task.Yield()</code>. If you use <code>Task.Delay</code> instead of <code>Thread.Sleep</code>, it can save a resources for one thread.</p>
+<h3 id="References"><a href="#References" class="headerlink" title="References"></a>References</h3><ul>
+<li><a href="http://www.cnblogs.com/stg609/p/3857242.html" target="_blank" rel="noopener">Thread.Sleep(0) vs Sleep(1) vs Yeild - stg609 - 博客园</a></li>
+<li><a href="https://stackoverflow.com/q/41830216/6233938" target="_blank" rel="noopener">c# - Task.Delay().Wait(); sometimes causing a 15ms delay in messaging system - Stack Overflow</a></li>
+<li><a href="https://stackoverflow.com/q/20082221/6233938" target="_blank" rel="noopener">c# - When to use Task.Delay, when to use Thread.Sleep? - Stack Overflow</a></li>
+<li><a href="https://stackoverflow.com/q/29356139/6233938" target="_blank" rel="noopener">c# - Should I always use Task.Delay instead of Thread.Sleep? - Stack Overflow</a></li>
+<li><a href="https://social.msdn.microsoft.com/Forums/en-US/d7071ba4-8962-43c6-975a-28cdbce51548/whats-the-difference-between-threadsleep0-and-threadyield?forum=csharplanguage" target="_blank" rel="noopener">What’s the difference between Thread.Sleep(0) and Thread,Yield()?</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/05/13/How-does-WPF-application-get-mouse-position-when-mouse-stay-outside-window/" rel="next" title="How does WPF application get mouse position when mouse is outside window?">
+                <i class="fa fa-chevron-left"></i> How does WPF application get mouse position when mouse is outside window?
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/badboy.jpg" alt="Neal chen">
+            
+              <p class="site-author-name" itemprop="name">Neal chen</p>
+              <p class="site-description motion-element" itemprop="description">.NET core\WPF\.NET</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:chentianlong0608@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction"><span class="nav-number">1.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Detail"><span class="nav-number">2.</span> <span class="nav-text">Detail</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Theories"><span class="nav-number">3.</span> <span class="nav-text">Theories</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Thread-Sleep-0"><span class="nav-number">3.1.</span> <span class="nav-text">Thread.Sleep(0)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Thread-Yeild"><span class="nav-number">3.2.</span> <span class="nav-text">Thread.Yeild()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Thread-Sleep-1"><span class="nav-number">3.3.</span> <span class="nav-text">Thread.Sleep(1)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Task-Delay-0"><span class="nav-number">3.4.</span> <span class="nav-text">Task.Delay(0)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Task-Yield"><span class="nav-number">3.5.</span> <span class="nav-text">Task.Yield()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Task-Delay-1"><span class="nav-number">3.6.</span> <span class="nav-text">Task.Delay(1)</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Differences"><span class="nav-number">4.</span> <span class="nav-text">Differences</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#References"><span class="nav-number">5.</span> <span class="nav-text">References</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Neal chen</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -252,6 +252,155 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/15/transfer-of-execution-rights-Task-Yield-Dispatcher-Yield/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Neal chen">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/badboy.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Neal's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/05/15/transfer-of-execution-rights-Task-Yield-Dispatcher-Yield/" itemprop="url">transfer of execution rights - Task.Yield, Dispatcher.Yield</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-05-15T20:18:40-06:00">
+                2019-05-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h3><p>As the word <code>Yield</code> means, the <code>Yield()</code> method transfers excution right of current task, then other tasks will run. And the method of <code>Yield()</code> is existed in <code>Task</code>, <code>Dispatcher</code>, <code>Thread</code> class, and as the name shows, these methods’s function is to transfer current task’s execution right. Are there any differences ? How do they work? </p>
+<p>In this article, we will see more details about <code>Yield()</code> methods.</p>
+<h3 id="Details"><a href="#Details" class="headerlink" title="Details"></a>Details</h3><blockquote>
+<p>The original link is <a href="https://blog.walterlv.com/post/yield-in-task-dispatcher.html" target="_blank" rel="noopener">出让执行权：Task.Yield, Dispatcher.Yield</a>. But this blog was written in Chinese, so I translate its content to English. Waterlv is a MVP(Microsoft Most Valuable Professional),and he is good at .NET Core\WPF\.NET. Here is his <a href="https://blog.walterlv.com/" target="_blank" rel="noopener">Blog</a>.</p>
+</blockquote>
+<hr>
+<h3 id="Dispatcher-Yield"><a href="#Dispatcher-Yield" class="headerlink" title="Dispatcher.Yield"></a>Dispatcher.Yield</h3><p>If we have to implement a time-consuming method, to avoid affecting the <code>UI</code> thread, what methods or <code>API</code> will you choose? Maybe <code>Invoke</code> and <code>InvokeAsync</code> is a good choice, and they split time-consuming task into small pieces that are executed at a lower prority than user input and rendering.</p>
+<p> <code>Dispatcher.Yield()</code> does the same job, and its function is more familiar with <code>Dispatcher.InvokeAsync</code> than <code>Dispatcher.Invoke</code>.</p>
+<p> It needs <code>await</code> before the method when we use it.</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">foreach</span>(<span class="keyword">var</span> item <span class="keyword">in</span> collection)</span><br><span class="line">&#123;</span><br><span class="line">    DoWorkWhichWillTakeHalfASecond();</span><br><span class="line">    <span class="keyword">await</span> Dispacther.Yield();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>As the codes above, it splits the task to small pieces evetry time when excuting <code>foreach</code> method. Therefore, the <code>UI</code> thread can respond user interaction and rendering when running this time-consuming codes.</p>
+<p>We can pass a parameter to <code>Yield</code> method when we use it, the value of this parameter is the priority of subsequent task. Its default value is <code>DispatcherPriority.Background</code>, and priority of <code>Backgroud</code> is lower than user’s input action’s priority (<code>DispatcherPrority.Input</code>) , UI’s priority (<code>DispatcherPriority.Loaded</code>) and rendering priority (<code>DispatcherPriority.Render</code>).</p>
+<p>How does <code>Dispatcher.Yield</code> method work?</p>
+<p>After reading the source codes of <code>Dispathcer.Yield</code>, it can find that the result of this method is an instance of <code>DispatcherPriorityAwaiter</code>, and its <code>OnCompleted</code> method is posted below.</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">OnCompleted</span>(<span class="params">Action continuation</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(_dispatcher == <span class="literal">null</span>)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> InvalidOperationException(SR.Get(SRID.DispatcherPriorityAwaiterInvalid));</span><br><span class="line">    _dispatcher.InvokeAsync(continuation, _priority);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>We can find that this <code>OnCompleted</code> method calls <code>InvokeAsync</code> method. It depends on <code>InvokeAsync</code> to implement its function. </p>
+<p>Visit <a href="http://liujiajia.me/blog/details/csharp-multi-threading-05-csharp6-08-customize-awaitable" target="_blank" rel="noopener">【C#】【多线程】【05-使用C#6.0】08-自定义awaitable类型 - L.M</a> ,for more information about <code>OnCompleted</code> method.</p>
+<h4 id="Tips-about-Dispatcher-Yield"><a href="#Tips-about-Dispatcher-Yield" class="headerlink" title="Tips about Dispatcher.Yield()"></a>Tips about <code>Dispatcher.Yield()</code></h4><p><code>Dispatcher.Yield</code> is a <strong>static</strong> method of class <code>Dispatcher</code>, and <code>InvokeAsync</code> is a normal method.<br>Here is an example.</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Windows.Threading</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title">Demo</span> : <span class="title">DispatcherObject</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Test</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="comment">// this 'Dispatcher' is class and Yield() is a static method of Dispatcher class.</span></span><br><span class="line">        <span class="keyword">await</span> Dispatcher.Yield();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// this 'Dispatcher' is an instance of 'Dispatcher' class, and the name of this instance is Dispatcher.</span></span><br><span class="line">        <span class="keyword">await</span> Dispatcher.InvokeAsync(()=&gt;&#123;&#125;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Task-Yield"><a href="#Task-Yield" class="headerlink" title="Task.Yield"></a>Task.Yield</h3><p>We use <code>Task.Yield</code> method instead of <code>Dispatcher.Yield</code> in the example posted above.</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">foreach</span>(<span class="keyword">var</span> item <span class="keyword">in</span> collection)</span><br><span class="line">&#123;</span><br><span class="line">    DoWorkWhichWillTakeHalfASecond();</span><br><span class="line">    <span class="keyword">await</span> Task.Yield();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>This method has the same effect as <code>Dispatcher.Yield(DispatcherPriority.Normal)</code>. <code>Task</code> depends on <code>SynchronizationContext</code> to schedule threads, and the WPF UI thread’s <code>SynchronizationContext</code> is set to <code>DispatcherSynchronizationContext</code> , it relies <code>Dispatcher</code> to shedule; When creating an instance of <code>DispatcherSynchronizationContext</code> its default priority is <code>Normal</code>, and WPF dosen’t pass a special value. So, after calling <code>Task.Yield</code> at WPF UI thread to transfer excution right, it uses <code>Normal</code> priority to recover. Therefore, its effect is the same as <code>Dispatcher.Yield(DispatcherPriority.Normal)</code>.</p>
+<p>Here is the code about how does <code>DispatcherSynchronizationContext</code> execute subsequent task.</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span>     Asynchronously invoke the callback in the SynchronizationContext.</span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">void</span> <span class="title">Post</span>(<span class="params">SendOrPostCallback d, Object state</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// Call BeginInvoke with the cached priority.  Note that BeginInvoke</span></span><br><span class="line">    <span class="comment">// preserves the behavior of passing exceptions to</span></span><br><span class="line">    <span class="comment">// Dispatcher.UnhandledException unlike InvokeAsync.  This is</span></span><br><span class="line">    <span class="comment">// desireable because there is no way to await the call to Post, so</span></span><br><span class="line">    <span class="comment">// exceptions are hard to observe.</span></span><br><span class="line">    _dispatcher.BeginInvoke(_priority, d, state);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Because <code>Task.Yield</code> priority is <code>Normal</code>, its effect on the UI thread is not as good as <code>Dispatcher.Yield</code>. But, it is important to note that <code>SynchronizationContext</code> is not related to <code>Dispatcher</code> , so <code>Task.Yield</code> can be called on everty thread. And it will be a good choice to use <code>Task.Yield</code> to split time-consuming task into small task in <code>Task</code> method.</p>
+<h3 id="References"><a href="#References" class="headerlink" title="References"></a>References</h3><ul>
+<li><a href="chrome-extension://klbibkeccnjlkjkiokjodocebajanakg/suspended.html#ttl=c%23%20-%20Task.Yield%20-%20real%20usages%3F%20-%20Stack%20Overflow&amp;uri=https://stackoverflow.com/questions/23431595/task-yield-real-usages" target="_blank" rel="noopener">c# - Task.Yield - real usages? - Stack Overflow</a></li>
+<li><a href="https://msdn.microsoft.com/en-us/library/system.threading.tasks.task.yield%28v=vs.110%29.aspx?f=255&amp;MSPPError=-2147217396" target="_blank" rel="noopener">Task.Yield Method (System.Threading.Tasks)</a></li>
+<li><a href="https://stackoverflow.com/questions/24671883/difference-between-synchronization-context-and-dispatcher" target="_blank" rel="noopener">c# - Difference between Synchronization Context and Dispatcher - Stack Overflow</a></li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/14/The-usages-and-suggestions-about-Thead-Sleep-0-Task-Delay-0-Thread-Yield-Task-Yield-functions/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -343,7 +492,7 @@
 <p><code>Nothing</code> means there are not any codes. And we used <code>Stopwatch</code> to get the result. For more detail about <code>Stopwatch</code> visit <a href="https://blog.walterlv.com/post/dotnet-high-precision-performance-counting.html" target="_blank" rel="noopener">.NET/C# 在代码中测量代码执行耗时的建议（比较系统性能计数器和系统时间）</a>. This blog was written in Chinese, I will translate it later.<br>Here is a part of codes.</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> stopwatch = Stopwatch.StartNew();</span><br><span class="line">Thread.Sleep(<span class="number">0</span>);</span><br><span class="line"><span class="keyword">var</span> elapsed = stopwatch.Elapsed;</span><br><span class="line">Console.WriteLine(<span class="string">$"Thread.Sleep(0) : <span class="subst">&#123;elapsed&#125;</span>"</span>);</span><br></pre></td></tr></table></figure>
 <h4 id="Task-Delay-0"><a href="#Task-Delay-0" class="headerlink" title="Task.Delay(0)"></a>Task.Delay(0)</h4><p><code>Task.Delay</code> is a method of <em>TAP</em>. For more informations about <em>TAP</em>,visit <a href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/task-based-asynchronous-pattern-tap?wt.mc_id=MVP" target="_blank" rel="noopener">Task-based Asynchronous Pattern (TAP) Microsoft Docs</a>.</p>
-<p><em>TAP</em> is a threading model which is base on async state machine, and this is the biggest difference from <code>Thread</code> method.</p>
+<p><em>TAP</em> is a threading model which bases on async state machine, and this is the biggest difference from <code>Thread</code> method.</p>
 <p>Here is the source code of <code>Task.Delay</code>.</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> Creates a Task that will complete after a time delay.</span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="millisecondsDelay"&gt;</span>The number of milliseconds to wait before completing the returned Task<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="cancellationToken"&gt;</span>The cancellation token that will be checked prior to completing the returned Task<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;returns&gt;</span>A Task that represents the time delay<span class="doctag">&lt;/returns&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;exception cref="T:System.ArgumentOutOfRangeException"&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> The <span class="doctag">&lt;paramref name="millisecondsDelay"/&gt;</span> is less than -1.</span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/exception&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;exception cref="T:System.ObjectDisposedException"&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> The provided <span class="doctag">&lt;paramref name="cancellationToken"/&gt;</span> has already been disposed.</span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/exception&gt;</span>        </span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;remarks&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> If the cancellation token is signaled before the specified time delay, then the Task is completed in</span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> Canceled state.  Otherwise, the Task is completed in RanToCompletion state once the specified time</span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> delay has expired.</span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/remarks&gt;</span>        </span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Task <span class="title">Delay</span>(<span class="params"><span class="keyword">int</span> millisecondsDelay, CancellationToken cancellationToken</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// Throw on non-sensical time</span></span><br><span class="line">    <span class="keyword">if</span> (millisecondsDelay &lt; <span class="number">-1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ArgumentOutOfRangeException(<span class="string">"millisecondsDelay"</span>, Environment.GetResourceString(<span class="string">"Task_Delay_InvalidMillisecondsDelay"</span>));</span><br><span class="line">    &#125;</span><br><span class="line">    Contract.EndContractBlock();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// some short-cuts in case quick completion is in order</span></span><br><span class="line">    <span class="keyword">if</span> (cancellationToken.IsCancellationRequested)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// return a Task created as already-Canceled</span></span><br><span class="line">        <span class="keyword">return</span> Task.FromCancellation(cancellationToken);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (millisecondsDelay == <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// return a Task created as already-RanToCompletion</span></span><br><span class="line">        <span class="keyword">return</span> Task.CompletedTask;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Construct a promise-style Task to encapsulate our return value</span></span><br><span class="line">    <span class="keyword">var</span> promise = <span class="keyword">new</span> DelayPromise(cancellationToken);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Register our cancellation token, if necessary.</span></span><br><span class="line">    <span class="keyword">if</span> (cancellationToken.CanBeCanceled)</span><br><span class="line">    &#123;</span><br><span class="line">        promise.Registration = cancellationToken.InternalRegisterWithoutEC(state =&gt; ((DelayPromise)state).Complete(), promise);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ... and create our timer and make sure that it stays rooted.</span></span><br><span class="line">    <span class="keyword">if</span> (millisecondsDelay != Timeout.Infinite) <span class="comment">// no need to create the timer if it's an infinite timeout</span></span><br><span class="line">    &#123;</span><br><span class="line">        promise.Timer = <span class="keyword">new</span> Timer(state =&gt; ((DelayPromise)state).Complete(), promise, millisecondsDelay, Timeout.Infinite);</span><br><span class="line">        promise.Timer.KeepRootedWhileScheduled();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Return the timer proxy task</span></span><br><span class="line">    <span class="keyword">return</span> promise;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>This method will return <code>Task.CompleteTask</code> as result when the value of parameter is <code>0</code>. That means the code you write after <code>Task.Delay(0)</code> will be excuted immediately.(If the rest of <em>CPU</em> time slice is enough).</p>
@@ -1048,7 +1197,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-count">6</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>

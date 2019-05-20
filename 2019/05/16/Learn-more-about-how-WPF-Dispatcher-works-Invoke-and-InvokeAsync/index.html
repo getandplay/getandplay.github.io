@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="English">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="IntroductionThe WPF developers cannot avoid using the Dispatcher class. When we have to access controls or other UI parts on other threads (not UI thread), we should use Dispatcher.InvokeAsync or Disp">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Learn more about how WPF Dispatcher works.(Invoke and InvokeAsync)">
+<meta property="og:url" content="http://yoursite.com/2019/05/16/Learn-more-about-how-WPF-Dispatcher-works-Invoke-and-InvokeAsync/index.html">
+<meta property="og:site_name" content="Neal&#39;s Blog">
+<meta property="og:description" content="IntroductionThe WPF developers cannot avoid using the Dispatcher class. When we have to access controls or other UI parts on other threads (not UI thread), we should use Dispatcher.InvokeAsync or Disp">
+<meta property="og:locale" content="English">
+<meta property="og:image" content="http://yoursite.com/2019/05/16/Learn-more-about-how-WPF-Dispatcher-works-Invoke-and-InvokeAsync/2019-5-19-1.png">
+<meta property="og:updated_time" content="2019-05-20T18:12:15.036Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Learn more about how WPF Dispatcher works.(Invoke and InvokeAsync)">
+<meta name="twitter:description" content="IntroductionThe WPF developers cannot avoid using the Dispatcher class. When we have to access controls or other UI parts on other threads (not UI thread), we should use Dispatcher.InvokeAsync or Disp">
+<meta name="twitter:image" content="http://yoursite.com/2019/05/16/Learn-more-about-how-WPF-Dispatcher-works-Invoke-and-InvokeAsync/2019-5-19-1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","Sidebar Display, available value (only for Muse | Mist)":["always  expand for all pages automatically"],"display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/05/16/Learn-more-about-how-WPF-Dispatcher-works-Invoke-and-InvokeAsync/">
+
+
+
+
+
+  <title>Learn more about how WPF Dispatcher works.(Invoke and InvokeAsync) | Neal's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="English">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Neal's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/16/Learn-more-about-how-WPF-Dispatcher-works-Invoke-and-InvokeAsync/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Neal chen">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/badboy.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Neal's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Learn more about how WPF Dispatcher works.(Invoke and InvokeAsync)</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-05-16T18:08:54-06:00">
+                2019-05-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h3><p>The <code>WPF</code> developers cannot avoid using the <code>Dispatcher</code> class. When we have to access controls or other UI parts on other threads (not <code>UI</code> thread), we should use <code>Dispatcher.InvokeAsync</code> or <code>Dispatcher.Invoke</code> method. Also, <code>Dispatcher</code> can be used to delay a task until the current task is executed.</p>
+<p>Developers often used <code>Dispatcher.BeginInvoke</code> in the past. And Microsoft adds a new method which’s name is <code>Dispatcher.InvokeAsync</code> in <code>.NET Framework 4.5</code>.</p>
+<p>Are there any differences between these methods? And how does <code>Dispatcher</code> work?</p>
+<h3 id="Details"><a href="#Details" class="headerlink" title="Details"></a>Details</h3><blockquote>
+<p>The original link is <a href="https://blog.walterlv.com/post/dotnet/2017/09/26/dispatcher-invoke-async.html" target="_blank" rel="noopener">深入了解 WPF Dispatcher 的工作原理（Invoke/InvokeAsync 部分）</a>. But this blog was written in Chinese, so I translate its content to English. Waterlv is an MVP(Microsoft Most Valuable Professional), and he is good at .NET Core\WPF\.NET. Here is his <a href="https://blog.walterlv.com/" target="_blank" rel="noopener">Blog</a>.</p>
+</blockquote>
+<hr>
+<h3 id="BeginInvoke-and-InvokeAsync"><a href="#BeginInvoke-and-InvokeAsync" class="headerlink" title="BeginInvoke and InvokeAsync"></a><code>BeginInvoke</code> and <code>InvokeAsync</code></h3><p><code>BeginInvoke</code> method has existed when the <code>Dispatcher</code> class is added in the <code>.NET framework 3.0</code>. Are you familiar with <code>Begin</code> prefix? Yes, it is the <code>Begin\End</code> asynchronous programming model(APM) which is introduced in <code>.NET Framework 1.1</code>. Although <code>BeginInvoke</code> is not completely implemented according to the APM model(there is no End and no <code>IAsyncResult</code> result), but this method is also thread-related. Not only does the name carry <code>Begin</code> for the means of asynchronous execution, but there are still ancient types like <code>Delegate</code> in the parameter list. All the details above show that the <code>BeginInvoke</code> method is an <em>old</em> API.</p>
+<p>Every developer is still feeling excited about the <code>async/await</code> asynchronous model which was introduced in <code>.NET Framework 4.5</code>‘s updates. This model allows developers to write asynchronous codes as simple as synchronous codes. This is a new asynchronous programming model which is recommended by Microsoft, and its name is <code>TAP</code> (Task-based Asynchronous pattern). And <code>Dispatcher.InvokeAsync</code> was introduced in this version. So, what are the differences between <code>BeginInvoke</code> and <code>InvokeAsync</code>?</p>
+<h3 id="Differences"><a href="#Differences" class="headerlink" title="Differences"></a>Differences</h3><p>Firstly, we should read the source codes of these methods.</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">Browsable(false), EditorBrowsable(EditorBrowsableState.Never)</span>]</span><br><span class="line"><span class="function"><span class="keyword">public</span> DispatcherOperation <span class="title">BeginInvoke</span>(<span class="params">DispatcherPriority priority, Delegate method</span>)</span>;</span><br><span class="line"></span><br><span class="line">[<span class="meta">Browsable(false), EditorBrowsable(EditorBrowsableState.Never)</span>]</span><br><span class="line"><span class="function"><span class="keyword">public</span> DispatcherOperation <span class="title">BeginInvoke</span>(<span class="params">DispatcherPriority priority, Delegate method, <span class="keyword">object</span> arg</span>)</span>;</span><br><span class="line"></span><br><span class="line">[<span class="meta">Browsable(false), EditorBrowsable(EditorBrowsableState.Never)</span>]</span><br><span class="line"><span class="function"><span class="keyword">public</span> DispatcherOperation <span class="title">BeginInvoke</span>(<span class="params">DispatcherPriority priority, Delegate method, <span class="keyword">object</span> arg, <span class="keyword">params</span> <span class="keyword">object</span>[] args</span>)</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> DispatcherOperation <span class="title">BeginInvoke</span>(<span class="params">Delegate method, <span class="keyword">params</span> <span class="keyword">object</span>[] args</span>)</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> DispatcherOperation <span class="title">BeginInvoke</span>(<span class="params">Delegate method, DispatcherPriority priority, <span class="keyword">params</span> <span class="keyword">object</span>[] args</span>)</span>;</span><br></pre></td></tr></table></figure>
+<p>There are five overload methods, and it is easy to find that three of them are marked by special attribute to make them invisible in IntelliSense list (<em>but you can find them when you use ReSharper</em>). Are there any differences among these methods? The answer is NO. After reading these methods’ code, we can find that they all call the same method named <code>LegacyBeginInvokeImpl</code>. Here is the code of the method.</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">SecuritySafeCritical</span>]</span><br><span class="line"><span class="function"><span class="keyword">private</span> DispatcherOperation <span class="title">LegacyBeginInvokeImpl</span>(<span class="params">DispatcherPriority priority, Delegate method, <span class="keyword">object</span> args, <span class="keyword">int</span> numArgs</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ValidatePriority(priority, <span class="string">"priority"</span>);</span><br><span class="line">    <span class="keyword">if</span>(method == <span class="literal">null</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ArgumentNullException(<span class="string">"method"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    DispatcherOperation operation = <span class="keyword">new</span> DispatcherOperation(<span class="keyword">this</span>, method, priority, args, numArgs);</span><br><span class="line">    InvokeAsyncImpl(operation, CancellationToken.None);</span><br><span class="line">    <span class="keyword">return</span> operation;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>And its name’s prefix <code>Legacy</code> gives us some information about Microsoft’s altitude this method. It probably means Microsoft does not want to maintain this code anymore. Maybe, a few years later it will be marked as an <code>Obsolete</code> method.</p>
+<p>Here is the code of <code>InvokeAsync</code> method.</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> DispatcherOperation <span class="title">InvokeAsync</span>(<span class="params">Action callback</span>)</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> DispatcherOperation <span class="title">InvokeAsync</span>(<span class="params">Action callback, DispatcherPriority priority</span>)</span>;</span><br><span class="line"></span><br><span class="line">[<span class="meta">SecuritySafeCritical</span>]</span><br><span class="line"><span class="function"><span class="keyword">public</span> DispatcherOperation <span class="title">InvokeAsync</span>(<span class="params">Action callback, DispatcherPriority priority, CancellationToken cancellationToken</span>)</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> DispatcherOperation&lt;TResult&gt; InvokeAsync&lt;TResult&gt;(Func&lt;TResult&gt; callback);</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> DispatcherOperation&lt;TResult&gt; InvokeAsync&lt;TResult&gt;(Func&lt;TResult&gt; callback, DispatcherPriority priority);</span><br><span class="line"></span><br><span class="line">[<span class="meta">SecuritySafeCritical</span>]</span><br><span class="line"><span class="keyword">public</span> DispatcherOperation&lt;TResult&gt; InvokeAsync&lt;TResult&gt;(Func&lt;TResult&gt; callback, DispatcherPriority priority, CancellationToken cancellationToken);</span><br></pre></td></tr></table></figure>
+<p>This is what the TAP code looks like. After reading these method’s code we can find that the implementation of these methods is almost the same. Here, I post the third method’s source code.</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">SecuritySafeCritical</span>]</span><br><span class="line"><span class="function"><span class="keyword">public</span> DispatcherOperation <span class="title">InvokeAsync</span>(<span class="params">Action callback, DispatcherPriority priority, CancellationToken cancellationToken</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(callback == <span class="literal">null</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ArgumentNullException(<span class="string">"callback"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    ValidatePriority(priority, <span class="string">"priority"</span>);</span><br><span class="line">    DispatcherOperation operation = <span class="keyword">new</span> DispatcherOperation(<span class="keyword">this</span>, priority, callback);</span><br><span class="line">    InvokeAsyncImpl(operation, cancellationToken);</span><br><span class="line">    <span class="keyword">return</span> operation;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>What is the feeling when you read these codes? Yeah, there must be a voice in your mind and it says that ‘I read them before’. They are almost the same as <code>LegacyBeginInvokeImpl</code>.</p>
+<p>Finally, we knew the answer to why Microsoft recommended <code>InvokeAsync</code> instead of <code>BeginInvoke</code>. Microsoft had changed <code>BeginInvoke</code>‘s implementation to <em>TAP</em> model but didn’t change its name and the parameters list in <code>NET Framework 4.5</code>. So, they added another six methods(<code>InvokeAsync</code>), and these all methods above do the same thing.</p>
+<p>Due to <code>InvokeAsync</code> and <code>BeginInvoke</code> has the same codes, we don’t have to introduce both methods. So, in the following paragraphs, we are going to introduce more details about <code>InvokeAsync</code>.</p>
+<hr>
+<h3 id="Thoery-of-InvokeAsync"><a href="#Thoery-of-InvokeAsync" class="headerlink" title="Thoery of InvokeAsync"></a>Thoery of <code>InvokeAsync</code></h3><p>All information above told us that the core of the <code>InvokeAsync</code> method is <code>InvokeAsyncImpl</code>. Here are the steps of the <code>InvokeAsync</code> method.</p>
+<ol>
+<li><p>Wrap the <code>Action/Func</code> with <code>DispatcherOperation</code>.Therefore, the task  and priority we passed will be processed together;</p>
+</li>
+<li><p>Add <code>DispatcherOperation</code> to a queue of <code>PriorityQueue&lt;DispatcherOperation&gt;</code>. This queue implements a <code>SortedList</code> class, every time it pops a task is depending on its priority. </p>
+</li>
+<li><p>Call <code>RequestProcessing</code>, send a message to a <strong>hidden window</strong> at last.</p>
+</li>
+<li><p>When the <strong>hidden window</strong> received that message, it will take a task from the <code>PriorityQueue</code> and execute it. (The real situation is more complicated, all details will be shown below).</p>
+</li>
+</ol>
+<p><img src="/2019/05/16/Learn-more-about-how-WPF-Dispatcher-works-Invoke-and-InvokeAsync/2019-5-19-1.png" alt></p>
+<p>In this progress, it calls <code>TryPostMessage</code> to send messages. Here is the method’s code.</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UnsafeNativeMethods.TryPostMessage(<span class="keyword">new</span> HandleRef(<span class="keyword">this</span>, _window.Value.Handle), _msgProcessQueue, IntPtr.Zero, IntPtr.Zero);</span><br></pre></td></tr></table></figure>
+<p>It is important to notice that there is a <code>_window</code>, but what does this <code>_window</code> mean? After reading the constructor of the <code>Dispatcher</code> class, we found this <code>_window</code>. It is not the <code>Window</code> class we usually know, it a hidden window of <code>Win32</code>, and its usage is to send and receive the schedule message of the <code>Dispatcher</code> class. For more details about this window, visit <code>MessageOnlyHwndWrapper</code>‘s source code, and you will find it calls <code>UnsafeNativeMethods.CreateWindowEx</code> method to create this window in its base class <code>HwndWrapper</code>.</p>
+<p>Since it can send a message to <code>_window</code>, it is natural to <code>Hook</code> its message handler, like this:</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Create the message-only window we use to receive messages</span></span><br><span class="line"><span class="comment">// that tell us to process the queue.</span></span><br><span class="line">MessageOnlyHwndWrapper window = <span class="keyword">new</span> MessageOnlyHwndWrapper();</span><br><span class="line">_window = <span class="keyword">new</span> SecurityCriticalData&lt;MessageOnlyHwndWrapper&gt;( window );</span><br><span class="line"></span><br><span class="line">_hook = <span class="keyword">new</span> HwndWrapperHook(WndProcHook);</span><br><span class="line">_window.Value.AddHook(_hook);</span><br></pre></td></tr></table></figure>
+<p>In this <code>WndProcHook</code> method, it handles three types of messages.</p>
+<ol>
+<li>Close the hidden window (<code>_window</code>).</li>
+<li>Handle the scheduled task of the <code>Dispatcher</code> class (this message is registered at the static constructor method of <code>Dispatcher</code>).</li>
+<li>Timer.</li>
+</ol>
+<p>Why does it handle the message about the timer?</p>
+<p>After researching, it is clear that Microsoft split all priorities into three types.</p>
+<ol>
+<li>Foreground priority (from <code>DispatcherPriority.Loaded</code> to <code>DispatcherPriority.Send</code>, the number is 6 to 10).</li>
+<li>Background priority (from <code>DispatcherPriority.Background</code> to <code>DispatcherPriority.Send</code>, the number is 4 to 5).</li>
+<li>Idle priority (from <code>DispatcherPriority.SystemIdle</code> to <code>DispatcherPriority.ApplicationIdle</code>, the number is 1 to 3)</li>
+</ol>
+<p>But, it needs to notice that the <code>Background priority</code> and <code>Idle priority</code> are treated as one type of priority in Microsoft’s code. So, in fact, there are just two types of priority, the <code>Foreground</code> and <code>Background</code>. And there is one point to distinguish them is <em>user’s input</em>.</p>
+<p>If a user’s input occurs, a timer will be turned on, and during this time interval, all <code>Background priority</code> tasks will not be executed.  But <code>Foreground priority</code> tasks will not be affected by the user’s inputs. Therefore, the user’s inputs will not be starved, and the WPF application will not be stuck from the input level.</p>
+<p>It’s important to notice that <code>InvokeAsync</code> is implemented according to the <code>TAP</code> asynchronous model, and this method can be used with <code>await</code>. How does it work?</p>
+<p>After reading the source code of <code>InvokeAsync</code> which is posted above, we noticed that the return value of the <code>InvokeAsync</code> method is an instance of <code>DispatcherOperation</code>. This instance is created at the beginning of the codes. <code>DispatcherOperation operation = new DispatcherOperation(this, priority, callback);</code> There is an <code>Invoke</code> method without a return value, but it will change the result of <code>Task</code>. And the <code>DispatcherOperation</code> class has implemented the <code>GetAwaiter</code> method so we can use <code>await</code> before this method. </p>
+<p>For more information about <code>await</code>, see <a href="https://blogs.msdn.microsoft.com/lucian/2012/12/11/how-to-write-a-custom-awaiter/" target="_blank" rel="noopener">How to write a custom awaiter – Lucian’s VBlog</a>.</p>
+<h3 id="The-theory-of-Invoke"><a href="#The-theory-of-Invoke" class="headerlink" title="The theory of Invoke"></a>The theory of <code>Invoke</code></h3><p>If you think the theory of <code>Invoke</code> is easier than <code>InvokeAsync</code>, probably you may ignore a very import question - <code>deadlock</code>. If the <code>Invoke</code> implemented according to the <code>Synchronous wait</code> method, the UI thread will be blocked when it calls the <code>Invoke</code> method on the current thread. And the <code>Action</code> passed by <code>Invoke</code> method will be executed on UI thread, but this thread is blocked, so <code>deadlock</code> happens.</p>
+<p>To avoid <code>deadlock</code>, <code>Invoke</code> method must have other implementation, and there are two branches for this implementation developed by Microsoft.</p>
+<ol>
+<li><p>If the task’s priority is the highest priority (the number is 10), it will call the <code>action</code> passed by <code>Invoke</code> method.</p>
+</li>
+<li><p>If the task’s priority is lower than 10, it will call <code>DispatcherOperation.Wait</code> method to wait.</p>
+</li>
+</ol>
+<p>Here is a part of the source code of <code>DispatcherOperation.Wait</code> method.</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> DispatcherOperationStatus <span class="title">Wait</span>(<span class="params">TimeSpan timeout</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// Previous codes are omitted</span></span><br><span class="line">            </span><br><span class="line">    <span class="comment">// We are the dispatching thread for this operation, so</span></span><br><span class="line">    <span class="comment">// we can't block.  We will push a frame instead.</span></span><br><span class="line">    DispatcherOperationFrame frame = <span class="keyword">new</span> DispatcherOperationFrame(<span class="keyword">this</span>, timeout);</span><br><span class="line">    Dispatcher.PushFrame(frame);</span><br><span class="line">        </span><br><span class="line">    <span class="comment">// Behind codes are omitted</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> _status;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>In this method above, it calls <code>Dispatcher.PushFrame</code>, and this method can wait without blocking the thread. For more theories visit <a href="https://blog.walterlv.com/post/dotnet/2017/09/26/dispatcher-push-frame.html" target="_blank" rel="noopener">深入了解 WPF Dispatcher 的工作原理（PushFrame 部分）</a>.</p>
+<h3 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h3><ol>
+<li>We recommended using <code>InvokeAsync</code> instead of <code>BeginInvoke</code> if your application’s framework version is higher than 4.5.</li>
+<li><code>Dispatcher</code> execute all <code>Invoke</code> tasks by priority by creating a hidden message window.</li>
+<li><code>Invoke</code> method avoids blocking UI thread by the <code>PushFrame</code> method.</li>
+</ol>
+<h3 id="References"><a href="#References" class="headerlink" title="References"></a>References</h3><ul>
+<li>Asynchronous model<ul>
+<li><a href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/asynchronous-programming-model-apm?wt.mc_id=MVP" target="_blank" rel="noopener">Asynchronous Programming Model (APM) - Microsoft Docs</a></li>
+<li><a href="https://msdn.microsoft.com/en-us/library/aa719595(v=vs.71" target="_blank" rel="noopener">Asynchronous Design Pattern Overview</a>.aspx)</li>
+<li><a href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/interop-with-other-asynchronous-patterns-and-types?wt.mc_id=MVP" target="_blank" rel="noopener">Interop with Other Asynchronous Patterns and Types - Microsoft Docs</a></li>
+<li><a href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/task-based-asynchronous-pattern-tap?wt.mc_id=MVP" target="_blank" rel="noopener">Task-based Asynchronous Pattern (TAP) - Microsoft Docs</a></li>
+</ul>
+</li>
+<li>InvokeAsync<ul>
+<li><a href="http://referencesource.microsoft.com/#WindowsBase/Base/System/Windows/Threading/Dispatcher.cs" target="_blank" rel="noopener">Dispatcher.cs</a></li>
+</ul>
+</li>
+<li>WPF message mechanism<ul>
+<li><a href="http://blog.csdn.net/powertoolsteam/article/details/6109036" target="_blank" rel="noopener">WPF的消息机制（二）- WPF内部的5个窗口之隐藏消息窗口 - 葡萄城控件技术团队博客 - CSDN博客</a></li>
+</ul>
+</li>
+<li>Awaiter<ul>
+<li><a href="https://blogs.msdn.microsoft.com/lucian/2012/12/11/how-to-write-a-custom-awaiter/" target="_blank" rel="noopener">How to write a custom awaiter – Lucian’s VBlog</a></li>
+</ul>
+</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/05/15/transfer-of-execution-rights-Task-Yield-Dispatcher-Yield/" rel="next" title="Transfer of execution rights - Task.Yield, Dispatcher.Yield">
+                <i class="fa fa-chevron-left"></i> Transfer of execution rights - Task.Yield, Dispatcher.Yield
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/badboy.jpg" alt="Neal chen">
+            
+              <p class="site-author-name" itemprop="name">Neal chen</p>
+              <p class="site-description motion-element" itemprop="description">.NET core\WPF\.NET</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:chentianlong0608@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction"><span class="nav-number">1.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Details"><span class="nav-number">2.</span> <span class="nav-text">Details</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#BeginInvoke-and-InvokeAsync"><span class="nav-number">3.</span> <span class="nav-text">BeginInvoke and InvokeAsync</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Differences"><span class="nav-number">4.</span> <span class="nav-text">Differences</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Thoery-of-InvokeAsync"><span class="nav-number">5.</span> <span class="nav-text">Thoery of InvokeAsync</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#The-theory-of-Invoke"><span class="nav-number">6.</span> <span class="nav-text">The theory of Invoke</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Conclusion"><span class="nav-number">7.</span> <span class="nav-text">Conclusion</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#References"><span class="nav-number">8.</span> <span class="nav-text">References</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Neal chen</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -242,6 +242,218 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/21/Learn-more-about-how-WPF-Dispatcher-works-PushFrame/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Neal chen">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/badboy.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Neal's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/05/21/Learn-more-about-how-WPF-Dispatcher-works-PushFrame/" itemprop="url">Learn more about how WPF Dispatcher works.(Part 2 - PushFrame)</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-05-21T16:14:17-06:00">
+                2019-05-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h3><p>In the previous article <a href="../2019/05/16/Learn-more-about-how-WPF-Dispatcher-works-Invoke-and-InvokeAsync">“Learn more about how WPF Dispatcher works. (Invoke and InvokeAsync)”</a>, we found that <code>Dispatcher.Invoke</code> depends on <code>Dispatcher.PushFrame</code> method to wait without blocking. But how does <code>Dispatcher.PushFrame</code> work?</p>
+<p>In this blog, we will introduce more details about <code>Dispatcher</code>.</p>
+<hr>
+<h3 id="Details"><a href="#Details" class="headerlink" title="Details"></a>Details</h3><blockquote>
+<p>The original link is <a href="https://blog.walterlv.com/post/dotnet/2017/09/26/dispatcher-push-frame.html" target="_blank" rel="noopener">深入了解 WPF Dispatcher 的工作原理（PushFrame 部分）</a>. But this blog was written in Chinese, so I translate its content to English. Waterlv is an MVP(Microsoft Most Valuable Professional), and he is good at .NET Core\WPF\.NET. Here is his <a href="https://blog.walterlv.com/" target="_blank" rel="noopener">Blog</a>.</p>
+</blockquote>
+<hr>
+<h3 id="Dispatcher-PushFrame"><a href="#Dispatcher-PushFrame" class="headerlink" title="Dispatcher.PushFrame"></a>Dispatcher.PushFrame</h3><p>If you are a WPF developer, you must have known the <code>ShowDialog</code> method of the <code>Window</code> class. But do you know how does <code>ShowDialog</code> method work? Why does the method which calls <code>ShowDialog</code> continue to execute after the window returns?</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> w = <span class="keyword">new</span> FooWindow();</span><br><span class="line">w.ShowDialog();</span><br><span class="line">Debug.WriteLine(w.Bar);</span><br></pre></td></tr></table></figure>
+<p>To answer these questions mentioned above, we have to read the source code of <code>Dispatcher.PushFrame</code> method. But before reading, we should learn some knowledge about the <code>DoEvents</code> method in <code>Windows Forms</code>.</p>
+<h3 id="DoEvents"><a href="#DoEvents" class="headerlink" title="DoEvents"></a>DoEvents</h3><p>The <code>DoEvents</code> method in the <code>Windows Forms</code> allows you to insert a UI rendering operation during executing a time-consuming operation, and it makes your application look like it doesn’t stop responding.</p>
+<p>Here are the codes of <code>DoEvents</code>.</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">SecurityPermissionAttribute(SecurityAction.Demand, Flags = SecurityPermissionFlag.UnmanagedCode)</span>]</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">DoEvents</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    DispatcherFrame frame = <span class="keyword">new</span> DispatcherFrame();</span><br><span class="line">    Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background,</span><br><span class="line">        <span class="keyword">new</span> DispatcherOperationCallback(ExitFrame), frame);</span><br><span class="line">    Dispatcher.PushFrame(frame);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">object</span> <span class="title">ExitFrame</span>(<span class="params"><span class="keyword">object</span> f</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ((DispatcherFrame)f).Continue = <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Firstly, we should know the conclusion mentioned above that <code>Dispacther.PushFrame</code> method can wait without blocking UI thread. ( The theory will be posted below, but now just remember this conclusion.)</p>
+<p>And base on the conclusion, we now analyze the theory of <code>DoEvents</code> which is posted above. And its steps are as followed.</p>
+<ol>
+<li><p>Add an instance of <code>DispatcherOperation</code> with <code>Background</code> priority (4) to execute the <code>ExitFrame</code> method.</p>
+</li>
+<li><p>Call the <code>Dispatcher.PushFrame</code> method to wait without blocking UI thread.</p>
+</li>
+<li><p>Due to the priority of user’s input is <code>Input</code> (5) and the priority of the UI response is <code>Loaded</code> (6) and the priority of rendering is <code>Render</code> (7), they all are higher than <code>Background</code> (4), so the <code>ExitFrame</code> method can only be executed after all UI task have been executed.</p>
+</li>
+<li><p>The value of <code>Dispatcher.Continue</code> will be set to <code>false</code> when executing the <code>ExitFrame</code> method.</p>
+</li>
+</ol>
+<p>Base on the function of <code>DoEvents</code>, we can guess that the goal of setting the value of <code>DispatcherFrame.Continue</code> to <code>false</code> is to end the wait of <code>Dispatcher.PushFrame(frame)</code>, so that the subsequent codes can be executed.</p>
+<p>So according to the guess, we may know the steps of waiting without blocking UI thread.</p>
+<ol>
+<li><p>Call <code>Dispatcher.PushFrame(frame)</code> to wait without blocking.</p>
+</li>
+<li><p>Set <code>frame.Continue = false</code> to end the wait and execute the subsequent codes.</p>
+</li>
+</ol>
+<p>It is easier to read the source codes of the <code>Dispatcher.PushFrame</code> with the guess and information above.</p>
+<h3 id="Source-codes-of-PushFrame"><a href="#Source-codes-of-PushFrame" class="headerlink" title="Source codes of PushFrame"></a>Source codes of <code>PushFrame</code></h3><p>Here are the codes.</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">SecurityCritical, SecurityTreatAsSafe </span>]</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">PushFrameImpl</span>(<span class="params">DispatcherFrame frame</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    SynchronizationContext oldSyncContext = <span class="literal">null</span>;</span><br><span class="line">    SynchronizationContext newSyncContext = <span class="literal">null</span>;</span><br><span class="line">    MSG msg = <span class="keyword">new</span> MSG();</span><br><span class="line"> </span><br><span class="line">    _frameDepth++;</span><br><span class="line">    <span class="keyword">try</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Change the CLR SynchronizationContext to be compatable with our Dispatcher.</span></span><br><span class="line">        oldSyncContext = SynchronizationContext.Current;</span><br><span class="line">        newSyncContext = <span class="keyword">new</span> DispatcherSynchronizationContext(<span class="keyword">this</span>);</span><br><span class="line">        SynchronizationContext.SetSynchronizationContext(newSyncContext);</span><br><span class="line"> </span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">while</span>(frame.Continue)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span> (!GetMessage(<span class="keyword">ref</span> msg, IntPtr.Zero, <span class="number">0</span>, <span class="number">0</span>))</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line"> </span><br><span class="line">                TranslateAndDispatchMessage(<span class="keyword">ref</span> msg);</span><br><span class="line">            &#125;</span><br><span class="line"> </span><br><span class="line">            <span class="comment">// If this was the last frame to exit after a quit, we</span></span><br><span class="line">            <span class="comment">// can now dispose the dispatcher.</span></span><br><span class="line">            <span class="keyword">if</span>(_frameDepth == <span class="number">1</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span>(_hasShutdownStarted)</span><br><span class="line">                &#123;</span><br><span class="line">                    ShutdownImpl();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">finally</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// Restore the old SynchronizationContext.</span></span><br><span class="line">            SynchronizationContext.SetSynchronizationContext(oldSyncContext);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">finally</span></span><br><span class="line">    &#123;</span><br><span class="line">        _frameDepth--;</span><br><span class="line">        <span class="keyword">if</span>(_frameDepth == <span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// We have exited all frames.</span></span><br><span class="line">            _exitAllFrames = <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>There are two points which need to pay attention to :</p>
+<ol>
+<li><code>_frameDepth</code> field.</li>
+<li>The codes which are surrounded by <code>while</code>.</li>
+</ol>
+<p>Let’s begin with the <code>_frameDepth</code> field. Every time you call the <code>PushFrame</code> method, you should pass an instance of <code>DispatcherFrame</code>, and the <code>_frameDepth</code> field will add 1 when another <code>PushFrame</code> is called during the period of <code>PushFrame</code>. So, one by one, the <code>DispatcherFrame</code> is nested in layers.</p>
+<p>Then, we read the codes surrounded by <code>while</code>.</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span>(frame.Continue)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (!GetMessage(<span class="keyword">ref</span> msg, IntPtr.Zero, <span class="number">0</span>, <span class="number">0</span>))</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">    TranslateAndDispatchMessage(<span class="keyword">ref</span> msg);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Do you remember the guess mentioned above? After reading these codes we noticed that the condition of the <code>while</code> is <code>frame.Continue</code>, and if its value is <code>false</code> the loop will be exited, and the <code>PushFrame</code> method will be returned, then the <code>_frameDepth</code> field will subtract 1. If all the <code>frame.Continue</code> are set to <code>false</code>, the <code>Main</code> method will be exited.</p>
+<p>And, what will happen if the value of <code>frame.Continue</code> is always true? Obviously, it will enter a <code>dead loop</code>.  But you can’t insert any UI operations to a <code>dead loop</code>, so how does it execute the UI operations? In the codes of this method, there are two possibilities, one is that <code>GetMessage</code> method allows the application to continue processing window messages, the other is that <code>TranslateAndDispatchMessage</code> method allows us to continue processing window messages. (The task queue of <code>Dispatcher</code> depends on the message mechanism of windows which is mentioned in the previous article).</p>
+<p><img src="/2019/05/21/Learn-more-about-how-WPF-Dispatcher-works-PushFrame/2019-5-21-1.png" alt></p>
+<p>Unfortunately, both methods call the unmanaged code, it is hard to know their theories by reading the source codes. But, we can debug the <code>.NET Framework</code> source code by source code debugging technology. And we found that <code>GetMessage</code> method is running all the time, and the <code>TranslateAndDispatchMessage</code> does not seem to be called. So we believe that the key to waiting without blocking is in the <code>GetMessage</code> method. For more information about <code>.NET Framework</code> source code debugging technology, visit <a href="http://blog.lindexi.com/lindexi//post/%E8%B0%83%E8%AF%95-ms-%E6%BA%90%E4%BB%A3%E7%A0%81/" target="_blank" rel="noopener">调试 ms 源代码 - 林德熙</a>.</p>
+<p>After reading the codes of <code>GetMessage</code>, we found <code>messagePump</code> which is an instance of <code>UnsafeNagtiveMethods.ITfMessagePump</code>. And we can know how does message loop work by using the source code debugging technology.</p>
+<h3 id="Debugging-the-source-code-to-get-how-does-PushFrame-work"><a href="#Debugging-the-source-code-to-get-how-does-PushFrame-work" class="headerlink" title="Debugging the source code to get how does PushFrame work"></a>Debugging the source code to get how does <code>PushFrame</code> work</h3><p>We add <code>OnStylusDown</code> method for <code>MainWindow</code>‘s <code>StylusDown</code> event.</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">OnStylusDown</span>(<span class="params"><span class="keyword">object</span> sender, StylusDownEventArgs e</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Dispatcher.Invoke(() =&gt;</span><br><span class="line">    &#123;</span><br><span class="line">        Console.WriteLine();</span><br><span class="line">        <span class="keyword">new</span> MainWindow().ShowDialog();</span><br><span class="line">    &#125;, DispatcherPriority.Background);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>In these codes, both <code>Dispatcher.Invoke</code> and <code>ShowDialog</code> methods will call <code>PushFrame</code>. After running this application, every time we touch the <code>MainWindow</code>, we can found that there will add two <code>PushFrame</code> in the call-stack subwindow in VS. One is called by the <code>Invoke</code> method and the other is called by <code>ShowDialog</code>.</p>
+<p>After each <code>PushFrame</code> executes, there is a transition between host and manage. Then message processing is followed, and the touching message is called from the message processing.</p>
+<p>So, it’s sure that every time we execute <code>PushFrame</code> the unmanaged code will open a new message loop. When the window showed by <code>ShowDialog</code> closed or the <code>Invoke</code> has finished the message loop which is created by <code>PushFrame</code> will be exited. Therefore, the subsequent codes which are blocked by <code>while</code> can be executed. After the <code>PushFrame</code> of the Main method is exited, this application will close.</p>
+<p><img src="/2019/05/21/Learn-more-about-how-WPF-Dispatcher-works-PushFrame/2017-09-26-03-47-20.png" alt></p>
+<h3 id="Conclusions"><a href="#Conclusions" class="headerlink" title="Conclusions"></a>Conclusions</h3><ol>
+<li>Every time the <code>PushFrame</code> executed, a new message loop will be created, and the <code>_frameDepth</code> will add 1.</li>
+<li>In the new message loop, it can handle all kinds of Window’s message, some of them are transmitted in the form of events, and some are tasks that are added to the <code>PriorityQueue&lt;DispatcherOperation&gt;</code>.</li>
+<li>After exiting the <code>PushFrame</code> method, the message loop which is created by this code will be exited too. And the subsequent code of previous <code>PushFrame</code> will be executed.</li>
+<li>If all the <code>PushFrame</code> exited, the application will be closed.</li>
+<li>The <code>While</code> loop in <code>PushFrame</code> will block the main thread, but it can handle the messages in the <code>loop</code>, so it looks like the main thread is not blocked.</li>
+</ol>
+<h3 id="The-defects-of-PushFrame"><a href="#The-defects-of-PushFrame" class="headerlink" title="The defects of PushFrame"></a>The defects of <code>PushFrame</code></h3><ol>
+<li><p><code>PushFrame</code> depends on the Windows’ message loop, and there are some bugs about multiple message loops. Like,</p>
+<ul>
+<li><a href="https://stackoverflow.com/q/19411613/6233938" target="_blank" rel="noopener">c# - PushFrame locks up WPF window when user is moving window - Stack Overflow</a></li>
+</ul>
+</li>
+<li><p>Base on <code>PushFrame</code>‘s block mechanism, the unexpected reentrancy problem may happen is a single thread application. visit <a href="https://blog.walterlv.com/post/reentrancy-in-async-method.html" target="_blank" rel="noopener">异步任务中的重新进入（Reentrancy）</a> for more information about the <code>Reentrancy</code>.</p>
+</li>
+</ol>
+<h3 id="References"><a href="#References" class="headerlink" title="References"></a>References</h3><ul>
+<li><p>PushFrame/DispatcherFrame</p>
+<ul>
+<li><a href="http://referencesource.microsoft.com/#WindowsBase/Base/System/Windows/Threading/Dispatcher.cs" target="_blank" rel="noopener">Dispatcher.cs</a></li>
+<li><a href="https://stackoverflow.com/questions/33002966/wpf-dispatcherframe-magic-how-and-why-this-works" target="_blank" rel="noopener">c# - WPF DispatcherFrame magic - how and why this works? - Stack Overflow</a></li>
+<li><a href="https://stackoverflow.com/questions/41759665/for-what-is-pushframe-needed" target="_blank" rel="noopener">c# - For what is PushFrame needed? - Stack Overflow</a></li>
+<li><a href="https://stackoverflow.com/questions/2665191/wpf-dispatcher-pushframe" target="_blank" rel="noopener">multithreading - WPF - Dispatcher PushFrame() - Stack Overflow</a></li>
+<li><a href="https://msdn.microsoft.com/en-us/library/system.windows.threading.dispatcherframe.aspx" target="_blank" rel="noopener">DispatcherFrame Class (System.Windows.Threading)</a></li>
+<li><a href="https://www.codeproject.com/Articles/152137/DispatcherFrame-Look-in-Depth" target="_blank" rel="noopener">DispatcherFrame. Look in-Depth - CodeProject</a></li>
+</ul>
+</li>
+<li><p>Message loop of Windows</p>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Message_loop_in_Microsoft_Windows" target="_blank" rel="noopener">Message loop in Microsoft Windows - Wikipedia</a></li>
+<li><a href="https://stackoverflow.com/questions/11417216/understanding-the-dispatcher-queue/11419762" target="_blank" rel="noopener">c# - Understanding the Dispatcher Queue - Stack Overflow</a></li>
+<li><a href="http://blog.csdn.net/royyeah/article/details/4785473" target="_blank" rel="noopener">详解WPF线程模型和Dispatcher - 踏雪无痕 - CSDN博客</a></li>
+</ul>
+</li>
+<li><p><a href="http://blog.lindexi.com/lindexi//post/%E8%B0%83%E8%AF%95-ms-%E6%BA%90%E4%BB%A3%E7%A0%81/" target="_blank" rel="noopener">调试 ms 源代码 - 林德熙</a>.</p>
+</li>
+<li><a href="https://stackoverflow.com/q/19411613/6233938" target="_blank" rel="noopener">c# - PushFrame locks up WPF window when user is moving window - Stack Overflow</a></li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/16/Learn-more-about-how-WPF-Dispatcher-works-Invoke-and-InvokeAsync/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1401,7 +1613,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-count">8</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>

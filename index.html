@@ -242,6 +242,171 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/27/Know-about-default-TaskScheduler-and-ThreadPool-to-avoid-reducing-application-s-performance-drastically/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Neal chen">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/badboy.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Neal's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/05/27/Know-about-default-TaskScheduler-and-ThreadPool-to-avoid-reducing-application-s-performance-drastically/" itemprop="url">Learn about default TaskScheduler and ThreadPool in .NET to avoid reducing performance of Task.Run drastically</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-05-27T16:52:08-06:00">
+                2019-05-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h3><p><code>Task.Run</code> method is introduced in <code>.NET Framework 4.5</code>, and it’s simple for us to use <code>async</code>/<code>await</code> keywords. Also, use this method can help us manage threads with <code>ThreadPool</code>, so we can write asynchronous codes as simple as synchronous codes.</p>
+<p>But, if <code>Task.Run</code> method is abused, it will reduce the application’s performance drastically. In this article, we will introduce more details about the default thread pool task scheduler. And we will introduce the right way to use <code>Task.Run</code>, to avoid reducing the application’s performance.</p>
+<hr>
+<h3 id="Detail"><a href="#Detail" class="headerlink" title="Detail"></a>Detail</h3><blockquote>
+<p>The original link is <a href="https://blog.walterlv.com/post/default-task-scheduler-and-thread-pool.html" target="_blank" rel="noopener">了解 .NET 的默认 TaskScheduler 和线程池（ThreadPool）设置，避免让 Task.Run 的性能急剧降低</a>. But this blog was written in Chinese, so I translate its content to English. Waterlv is an MVP(Microsoft Most Valuable Professional), and he is good at .NET Core\WPF\.NET. Here is his <a href="https://blog.walterlv.com/" target="_blank" rel="noopener">Blog</a>.</p>
+</blockquote>
+<hr>
+<h3 id="How-to-use-Task-Run-method"><a href="#How-to-use-Task-Run-method" class="headerlink" title="How to use Task.Run method"></a>How to use <code>Task.Run</code> method</h3><ol>
+<li>For the <code>IO</code> operation, developers should try their best to use <code>Async</code> method provided in <code>IO</code> class instead of using <code>Task.Run</code> to execute an <code>IO</code> operation. (<code>Task.Run</code> will take up thread pool resources.)</li>
+<li>If there are not any <code>Async</code> methods to finish a time-consuming operation of <code>IO</code>, we should set the value of <code>CreateOptions</code> to <code>LongRunning</code>.</li>
+<li>We recommend using <code>Task.Run</code> method to execute short-running tasks.</li>
+</ol>
+<p>In the subsequent paragraphs, we will analyze the reasons for these usages posted above.</p>
+<h3 id="Demo"><a href="#Demo" class="headerlink" title="Demo"></a>Demo</h3><p>Before analyzing, we wrote a test application. In this application, it runs 10 asynchronous tasks with <code>Task.Run</code> method, and in each task, there is a <code>Thread.Sleep(5000)</code> method to suspend thread for 5 seconds.</p>
+<p><img src="/2019/05/27/Know-about-default-TaskScheduler-and-ThreadPool-to-avoid-reducing-application-s-performance-drastically/20190527185751.png" alt></p>
+<p>It is easy to find that the starting time of these 10 tasks is different, even we run these tasks at the same time. The first 4 tasks started immediately, then it started a new asynchronous task every second.</p>
+<p>Here is the code of this demo.</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="function"><span class="keyword">static</span> <span class="keyword">async</span> Task <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            Console.ForegroundColor = ConsoleColor.Red;</span><br><span class="line">            Console.WriteLine(<span class="string">$"[Index] [ID] [Time]"</span>);</span><br><span class="line">            Console.ForegroundColor = ConsoleColor.White;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">var</span> task = Enumerable.Range(<span class="number">0</span>,<span class="number">10</span>).Select(i=&gt;Task.Run(()=&gt;LongTimeTask(i))).ToList();</span><br><span class="line">            <span class="keyword">await</span> Task.WhenAll(task);</span><br><span class="line"></span><br><span class="line">            Console.Read();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">LongTimeTask</span>(<span class="params"><span class="keyword">int</span> index</span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            <span class="keyword">var</span> threadId = Thread.CurrentThread.ManagedThreadId.ToString().PadLeft(<span class="number">2</span>, <span class="string">' '</span>);</span><br><span class="line">            <span class="keyword">var</span> line = index.ToString().PadLeft(<span class="number">2</span>, <span class="string">' '</span>);</span><br><span class="line">            Console.WriteLine(<span class="string">$"[<span class="subst">&#123;line&#125;</span>]   [<span class="subst">&#123;threadId&#125;</span>] [<span class="subst">&#123;DateTime.Now:ss.fff&#125;</span>] Asynchronous task started--------"</span>);</span><br><span class="line">            </span><br><span class="line">            <span class="comment">//Sleep 5 seconds</span></span><br><span class="line">            Thread.Sleep(<span class="number">5000</span>);</span><br><span class="line"></span><br><span class="line">            Console.ForegroundColor = ConsoleColor.Green;</span><br><span class="line">            Console.WriteLine(<span class="string">$"[<span class="subst">&#123;line&#125;</span>]   [<span class="subst">&#123;threadId&#125;</span>] [<span class="subst">&#123;DateTime.Now:ss.fff&#125;</span>] Asynchronous task ended-----------"</span>);</span><br><span class="line">            Console.ForegroundColor = ConsoleColor.White;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="TaskScheduler"><a href="#TaskScheduler" class="headerlink" title="TaskScheduler"></a>TaskScheduler</h3><p>The reason for these tasks above couldn’t start right away is that the <code>Task</code> class use <code>TaskScheduler</code> to schedule threads. If developers don’t set the value of <code>TaskScheduler</code>, it will use <code>ThreadPoolTaskScheduler</code> as its default value. And, the <code>Task.Run</code> method uses the default scheduler of <code>.NET</code>, and you can get it by <code>TaskCheduler.Default</code>.</p>
+<p>For more information, visit source code of <code>.NET Core</code> – <a href="https://source.dot.net/#System.Private.CoreLib/src/System/Threading/Tasks/ThreadPoolTaskScheduler.cs,33cd274e06874569,references" target="_blank" rel="noopener">ThreadPoolTaskScheduler.QueueTask</a>.</p>
+<p>So, the setting in the thread pool will determine when to start a new thread to execute the task.</p>
+<h3 id="ThreadPool"><a href="#ThreadPool" class="headerlink" title="ThreadPool"></a>ThreadPool</h3><p>Developers can get the minimum number of worker threads and the asynchronous ‘IO’ threads by <code>ThreadPool.GetMinThreads</code> method. Also, we can get their maximum number by <code>Thread.GetMaxThreads</code> method. And we can call the <code>Set...</code> methods to set the value of the minimum or the maximum number of threads.</p>
+<p>For more details ,visit <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.threadpool.getminthreads?wt.mc_id=MVP" target="_blank" rel="noopener">ThreadPool.GetMinThreads(Int32, Int32) Method (System.Threading) - Microsoft Docs</a></p>
+<p>So, here are some items of how the <code>ThreadPool</code> works.</p>
+<ul>
+<li>The thread pool creates new worker thread or IO thread on demand until it reaches the minimum number of each category.</li>
+<li>By default, the minimum number of threads is the same as the number of processors on the computer.</li>
+<li>After reaching the minimum value, the thread pool can create other threads or just wait until some tasks finished.</li>
+<li>When the demand is low, the number of threads in the thread pool can be less than the minimum value.</li>
+</ul>
+<p>That is why the tasks of the demo posted above can’t start at the same time.  In my computer (4-processors), the minimum value of threads is 4, so the first 4 tasks can be executed immediately. When the number of thread reaches 4 and there are still no threads finished, the thread pool will try to wait for other tasks to complete. But, if there are still no threads finished after 1 second, the thread pool will create a new thread to execute the new task. But when there are some threads finished, it will use these threads to execute the new tasks instead of creating new threads.</p>
+<p>But, it is important to notice that the number of threads should be less than the maximum value.</p>
+<h3 id="The-recommended-usages"><a href="#The-recommended-usages" class="headerlink" title="The recommended usages"></a>The recommended usages</h3><p>After learning about the default action of <code>ThreadPoolTaskScheduler</code>, we can take advantage of the thread pool by doing these things:</p>
+<ol>
+<li>For the <code>IO</code> operation, try to use the methods with <code>Async</code> prefix provided by <code>IO</code> class to occupy <code>IO</code> threads in the thread pool instead of normal threads( don’t use <code>Task.Run</code> to consume thread pool resources)</li>
+<li>If there are not any <code>Async</code> methods to finish a time-consuming operation of <code>IO</code>, we should set the value of <code>CreateOptions</code> to <code>LongRunning</code>.(After setting this value, it will create a new thread instead of using the thread in the thread pool)</li>
+<li>We recommend using <code>Task.Run</code> method to execute short-running tasks.</li>
+</ol>
+<h3 id="References"><a href="#References" class="headerlink" title="References"></a>References</h3><ul>
+<li><a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.taskscheduler?wt.mc_id=MVP" target="_blank" rel="noopener">TaskScheduler Class (System.Threading.Tasks) - Microsoft Docs</a></li>
+<li><a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.taskcreationoptions?wt.mc_id=MVP" target="_blank" rel="noopener">TaskCreationOptions Enum (System.Threading.Tasks) - Microsoft Docs</a></li>
+<li><a href="https://docs.microsoft.com/en-us/previous-versions/msp-n-p/ff963549(v=pandp.10" target="_blank" rel="noopener">Parallel Tasks - Microsoft Docs</a>?wt.mc_id=MVP)</li>
+<li><a href="https://docs.microsoft.com/en-us/dotnet/standard/parallel-programming/attached-and-detached-child-tasks?wt.mc_id=MVP" target="_blank" rel="noopener">Attached and Detached Child Tasks - Microsoft Docs</a></li>
+<li><a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.threadpool.getminthreads?wt.mc_id=MVP" target="_blank" rel="noopener">ThreadPool.GetMinThreads(Int32, Int32) Method (System.Threading) - Microsoft Docs</a></li>
+<li><a href="https://docs.microsoft.com/en-us/dotnet/standard/threading/managed-threading-best-practices?wt.mc_id=MVP" target="_blank" rel="noopener">Managed Threading Best Practices - Microsoft Docs</a></li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/21/Learn-more-about-how-WPF-Dispatcher-works-PushFrame/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1613,7 +1778,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-count">9</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>

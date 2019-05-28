@@ -242,6 +242,157 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/28/NET-C-exception-handling-writes-an-empty-try-block-then-write-important-code-in-finally-block/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Neal chen">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/badboy.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Neal's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/05/28/NET-C-exception-handling-writes-an-empty-try-block-then-write-important-code-in-finally-block/" itemprop="url">.NET/C# exception handling: writing important code inside `finally` block with an empty `try` block</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-05-28T10:53:15-06:00">
+                2019-05-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h3><p>Have you seen an empty <code>try</code> block before? In this situation, there are some important codes in the <code>finally</code> block. So, why do developers use the <code>try {} finally {}</code> at this way?</p>
+<p>In this article, we will talk about this usage of the <code>try {} finally {}</code>.</p>
+<hr>
+<h3 id="Detail"><a href="#Detail" class="headerlink" title="Detail"></a>Detail</h3><blockquote>
+<p>The original link is <a href="https://blog.walterlv.com/post/empty-try-block.html" target="_blank" rel="noopener">.NET/C# 异常处理：写一个空的 try 块代码，而把重要代码写到 finally 中（Constrained Execution Regions）- walterlv</a>. But this blog was written in Chinese, so I translate its content to English. Waterlv is an MVP(Microsoft Most Valuable Professional), and he is good at .NET Core\WPF\.NET. Here is his <a href="https://blog.walterlv.com/" target="_blank" rel="noopener">Blog</a>.</p>
+</blockquote>
+<hr>
+<h3 id="Empty-try-block"><a href="#Empty-try-block" class="headerlink" title="Empty try block"></a>Empty <code>try</code> block</h3><p>You can visit <a href="https://source.dot.net/#System.Private.CoreLib/src/System/Exception.CoreCLR.cs" target="_blank" rel="noopener">this link</a> to read the source code of <code>Exception</code>, and in these codes, you can find some strange codes.</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">internal</span> <span class="keyword">void</span> <span class="title">RestoreExceptionDispatchInfo</span>(<span class="params">ExceptionDispatchInfo exceptionDispatchInfo</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// some codes are omitted here.</span></span><br><span class="line">    <span class="keyword">try</span>&#123;&#125;</span><br><span class="line">    <span class="keyword">finally</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// some codes are omitted here.</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// some codes are omitted here.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>It’s easy to find that there is an empty <code>try</code> block, and some important codes are written in the <code>finally</code> block. So, why do Microsoft’s developers write an empty <code>try</code> block?</p>
+<p>And here is the annotation for this <code>try</code> block:</p>
+<blockquote>
+<p>We do this inside a <code>finally</code> clause to ensure ThreadAbort cannot be injected while we have taken the lock. This is to prevent unrelated exception restorations from getting blocked due to TAE.</p>
+</blockquote>
+<p>That means, writing the code inside the <code>finally</code> clause is to avoid <code>Thread.Abort</code> method to interrupt the code. The execution of the <code>Thread.Abort</code> method is managed by <code>CLR</code>, and <code>finally</code> is also managed by <code>CLR</code>. And according to the <code>CLR</code> mechanism, <code>finally</code> block will not be interrupted by the <code>Thread.Abort</code> method.</p>
+<p>The code in <code>.NET core</code> and <code>.NET Framework</code> are the same.</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// This is invoked by ExceptionDispatchInfo.Throw to restore the exception stack trace, corresponding to the original throw of the</span></span><br><span class="line"><span class="comment">// exception, just before the exception is "rethrown".</span></span><br><span class="line">[<span class="meta">SecuritySafeCritical</span>]</span><br><span class="line"><span class="function"><span class="keyword">internal</span> <span class="keyword">void</span> <span class="title">RestoreExceptionDispatchInfo</span>(<span class="params">System.Runtime.ExceptionServices.ExceptionDispatchInfo exceptionDispatchInfo</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">bool</span> fCanProcessException = !(IsImmutableAgileException(<span class="keyword">this</span>));</span><br><span class="line">    <span class="comment">// Restore only for non-preallocated exceptions</span></span><br><span class="line">    <span class="keyword">if</span> (fCanProcessException)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Take a lock to ensure only one thread can restore the details</span></span><br><span class="line">        <span class="comment">// at a time against this exception object that could have</span></span><br><span class="line">        <span class="comment">// multiple ExceptionDispatchInfo instances associated with it.</span></span><br><span class="line">        <span class="comment">//</span></span><br><span class="line">        <span class="comment">// We do this inside a finally clause to ensure ThreadAbort cannot</span></span><br><span class="line">        <span class="comment">// be injected while we have taken the lock. This is to prevent</span></span><br><span class="line">        <span class="comment">// unrelated exception restorations from getting blocked due to TAE.</span></span><br><span class="line">        <span class="keyword">try</span>&#123;&#125;</span><br><span class="line">        <span class="keyword">finally</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// When restoring back the fields, we again create a copy and set reference to them</span></span><br><span class="line">            <span class="comment">// in the exception object. This will ensure that when this exception is thrown and these</span></span><br><span class="line">            <span class="comment">// fields are modified, then EDI's references remain intact.</span></span><br><span class="line">            <span class="comment">//</span></span><br><span class="line">            <span class="comment">// Since deep copying can throw on OOM, try to get the copies</span></span><br><span class="line">            <span class="comment">// outside the lock.</span></span><br><span class="line">            <span class="keyword">object</span> _stackTraceCopy = (exceptionDispatchInfo.BinaryStackTraceArray == <span class="literal">null</span>)?<span class="literal">null</span>:DeepCopyStackTrace(exceptionDispatchInfo.BinaryStackTraceArray);</span><br><span class="line">            <span class="keyword">object</span> _dynamicMethodsCopy = (exceptionDispatchInfo.DynamicMethodArray == <span class="literal">null</span>)?<span class="literal">null</span>:DeepCopyDynamicMethods(exceptionDispatchInfo.DynamicMethodArray);</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// Finally, restore the information. </span></span><br><span class="line">            <span class="comment">//</span></span><br><span class="line">            <span class="comment">// Since EDI can be created at various points during exception dispatch (e.g. at various frames on the stack) for the same exception instance,</span></span><br><span class="line">            <span class="comment">// they can have different data to be restored. Thus, to ensure atomicity of restoration from each EDI, perform the restore under a lock.</span></span><br><span class="line">            <span class="keyword">lock</span>(Exception.s_EDILock)</span><br><span class="line">            &#123;</span><br><span class="line">                _watsonBuckets = exceptionDispatchInfo.WatsonBuckets;</span><br><span class="line">                _ipForWatsonBuckets = exceptionDispatchInfo.IPForWatsonBuckets;</span><br><span class="line">                _remoteStackTraceString = exceptionDispatchInfo.RemoteStackTrace;</span><br><span class="line">                SaveStackTracesFromDeepCopy(<span class="keyword">this</span>, _stackTraceCopy, _dynamicMethodsCopy);</span><br><span class="line">            &#125;</span><br><span class="line">            _stackTraceString = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Marks the TES state to indicate we have restored foreign exception</span></span><br><span class="line">            <span class="comment">// dispatch information.</span></span><br><span class="line">            Exception.PrepareForForeignExceptionRaise();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Constrained-execution-regions"><a href="#Constrained-execution-regions" class="headerlink" title="Constrained execution regions"></a>Constrained execution regions</h3><p>This usage is introduced in Microsoft’s official document, for more detail, visit <a href="https://docs.microsoft.com/en-us/dotnet/framework/performance/reliability-best-practices#protect-critical-operations-with-constrained-execution-regions-and-reliability-contracts?wt.mc_id=MVP" target="_blank" rel="noopener">Reliability Best Practices</a>.</p>
+<blockquote>
+<p>Doing so instructs the just-in-time compiler to prepare all the code in the finally block before running the try block. This guarantees that the code in the finally block is built and will run in all cases. It is not uncommon in a CER to have an empty try block. Using a CER protects against asynchronous thread aborts and out-of-memory exceptions. See <a href="https://docs.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.runtimehelpers.executecodewithguaranteedcleanup?wt.mc_id=MVP" target="_blank" rel="noopener">ExecuteCodeWithGuaranteedCleanup</a> for a form of a CER that additionally handles stack overflows for exceedingly deep code.</p>
+</blockquote>
+<p>So, we can use the <code>try - finally</code> to make a constrained execution region, then the code inside <code>finally</code> clause will be executed reliably.</p>
+<hr>
+<h3 id="References"><a href="#References" class="headerlink" title="References"></a>References</h3><ul>
+<li><a href="https://docs.microsoft.com/en-us/dotnet/framework/performance/reliability-best-practices#protect-critical-operations-with-constrained-execution-regions-and-reliability-contracts?wt.mc_id=MVP" target="_blank" rel="noopener">Reliability Best Practices</a></li>
+<li><a href="https://docs.microsoft.com/en/dotnet/framework/performance/constrained-execution-regions#noninterruptible-regions?wt.mc_id=MVP" target="_blank" rel="noopener">Constrained Execution Regions</a></li>
+<li><a href="https://source.dot.net/#System.Private.CoreLib/src/System/Exception.CoreCLR.cs" target="_blank" rel="noopener">Exception.cs</a></li>
+<li><a href="https://source.dot.net/#System.Private.CoreLib/src/System/Exception.cs,a445c4e8ae46b283,references" target="_blank" rel="noopener">RestoreExceptionDispatchInfo</a></li>
+<li><a href="http://web.archive.org/web/20130523155042/http://blog.somecreativity.com/2008/04/10/the-empty-try-block-mystery/" target="_blank" rel="noopener">The empty try block mystery - Some Creativity</a></li>
+<li><a href="https://stackoverflow.com/q/2186101/6233938" target="_blank" rel="noopener">c# - Why use try {} finally {} with an empty try block? - Stack Overflow</a></li>
+<li><a href="https://github.com/dotnet/corefx/blob/master/src/System.Runtime/ref/System.Runtime.cs" target="_blank" rel="noopener">corefx/System.Runtime.cs at master · dotnet/corefx</a></li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/27/Know-about-default-TaskScheduler-and-ThreadPool-to-avoid-reducing-application-s-performance-drastically/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1778,7 +1929,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>

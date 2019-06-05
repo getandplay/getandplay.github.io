@@ -87,7 +87,7 @@
 <meta property="og:description" content="IntroductionThe WPF developers cannot avoid using the Dispatcher class. When we have to access controls or other UI parts on other threads (not UI thread), we should use Dispatcher.InvokeAsync or Disp">
 <meta property="og:locale" content="English">
 <meta property="og:image" content="http://yoursite.com/2019/05/16/Learn-more-about-how-WPF-Dispatcher-works-Invoke-and-InvokeAsync/2019-5-19-1.png">
-<meta property="og:updated_time" content="2019-05-27T21:39:00.820Z">
+<meta property="og:updated_time" content="2019-06-05T23:46:37.711Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Learn more about how WPF Dispatcher works.(Invoke and InvokeAsync)">
 <meta name="twitter:description" content="IntroductionThe WPF developers cannot avoid using the Dispatcher class. When we have to access controls or other UI parts on other threads (not UI thread), we should use Dispatcher.InvokeAsync or Disp">
@@ -314,6 +314,7 @@
         <h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h3><p>The <code>WPF</code> developers cannot avoid using the <code>Dispatcher</code> class. When we have to access controls or other UI parts on other threads (not <code>UI</code> thread), we should use <code>Dispatcher.InvokeAsync</code> or <code>Dispatcher.Invoke</code> method. Also, <code>Dispatcher</code> can be used to delay a task until the current task is executed.</p>
 <p>Developers often used <code>Dispatcher.BeginInvoke</code> in the past. And Microsoft adds a new method which’s name is <code>Dispatcher.InvokeAsync</code> in <code>.NET Framework 4.5</code>.</p>
 <p>Are there any differences between these methods? And how does <code>Dispatcher</code> work?</p>
+<a id="more"></a>
 <h3 id="Details"><a href="#Details" class="headerlink" title="Details"></a>Details</h3><blockquote>
 <p>The original link is <a href="https://blog.walterlv.com/post/dotnet/2017/09/26/dispatcher-invoke-async.html" target="_blank" rel="noopener">深入了解 WPF Dispatcher 的工作原理（Invoke/InvokeAsync 部分）</a>. But this blog was written in Chinese, so I translate its content to English. Waterlv is an MVP(Microsoft Most Valuable Professional), and he is good at .NET Core\WPF\.NET. Here is his <a href="https://blog.walterlv.com/" target="_blank" rel="noopener">Blog</a>.</p>
 </blockquote>

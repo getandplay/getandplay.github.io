@@ -88,7 +88,7 @@
 <meta property="og:locale" content="English">
 <meta property="og:image" content="http://yoursite.com/2019/05/14/The-usages-and-suggestions-about-Thead-Sleep-0-Task-Delay-0-Thread-Yield-Task-Yield-functions/2018-11-27-11-10-43.png">
 <meta property="og:image" content="http://yoursite.com/2019/05/14/The-usages-and-suggestions-about-Thead-Sleep-0-Task-Delay-0-Thread-Yield-Task-Yield-functions/2018-11-27-12-51-30.png">
-<meta property="og:updated_time" content="2019-05-20T19:09:09.492Z">
+<meta property="og:updated_time" content="2019-06-05T23:47:11.060Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="The usages and suggestions about Thead.Sleep(0),Task.Delay(0),Thread.Yield(),Task.Yield()">
 <meta name="twitter:description" content="IntroductionThere are some methods to release current thread excution right in .NET/C#. They are Thread.Sleep(0),Task.Delay(0),Thread.Yield(),Task.Yeild(). The function of these methods is to tell the">
@@ -314,6 +314,7 @@
       
         <h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h3><p>There are some methods to release current thread excution right in .NET/C#. They are <code>Thread.Sleep(0)</code>,<code>Task.Delay(0)</code>,<code>Thread.Yield()</code>,<code>Task.Yeild()</code>. The function of these methods is to tell the program to give up current thread and then run another thread. But there are some differences among these methods.</p>
 <p>This article is about their differences and theories.</p>
+<a id="more"></a>
 <hr>
 <h3 id="Detail"><a href="#Detail" class="headerlink" title="Detail"></a>Detail</h3><blockquote>
 <p>The original link is <a href="https://blog.walterlv.com/post/sleep-delay-zero-vs-yield.html" target="_blank" rel="noopener">C#/.NET 中 Thread.Sleep(0), Task.Delay(0), Thread.Yield(), Task.Yield() 不同的执行效果和用法建议</a>. But this blog was written in Chinese, so I translate its content to English. Waterlv is an MVP(Microsoft Most Valuable Professional), and he is good at .NET Core\WPF\.NET. Here is his <a href="https://blog.walterlv.com/" target="_blank" rel="noopener">Blog</a>.</p>

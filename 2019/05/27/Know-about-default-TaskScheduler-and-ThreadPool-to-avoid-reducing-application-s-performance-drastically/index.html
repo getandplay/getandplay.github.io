@@ -87,7 +87,7 @@
 <meta property="og:description" content="IntroductionTask.Run method is introduced in .NET Framework 4.5, and it’s simple for us to use async/await keywords. Also, use this method can help us manage threads with ThreadPool, so we can write a">
 <meta property="og:locale" content="English">
 <meta property="og:image" content="http://yoursite.com/2019/05/27/Know-about-default-TaskScheduler-and-ThreadPool-to-avoid-reducing-application-s-performance-drastically/20190527185751.png">
-<meta property="og:updated_time" content="2019-05-28T01:34:36.100Z">
+<meta property="og:updated_time" content="2019-06-05T23:46:11.164Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Learn about default TaskScheduler and ThreadPool in .NET to avoid reducing performance of Task.Run drastically">
 <meta name="twitter:description" content="IntroductionTask.Run method is introduced in .NET Framework 4.5, and it’s simple for us to use async/await keywords. Also, use this method can help us manage threads with ThreadPool, so we can write a">
@@ -313,6 +313,7 @@
       
         <h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h3><p><code>Task.Run</code> method is introduced in <code>.NET Framework 4.5</code>, and it’s simple for us to use <code>async</code>/<code>await</code> keywords. Also, use this method can help us manage threads with <code>ThreadPool</code>, so we can write asynchronous codes as simple as synchronous codes.</p>
 <p>But, if <code>Task.Run</code> method is abused, it will reduce the application’s performance drastically. In this article, we will introduce more details about the default thread pool task scheduler. And we will introduce the right way to use <code>Task.Run</code>, to avoid reducing the application’s performance.</p>
+<a id="more"></a>
 <hr>
 <h3 id="Detail"><a href="#Detail" class="headerlink" title="Detail"></a>Detail</h3><blockquote>
 <p>The original link is <a href="https://blog.walterlv.com/post/default-task-scheduler-and-thread-pool.html" target="_blank" rel="noopener">了解 .NET 的默认 TaskScheduler 和线程池（ThreadPool）设置，避免让 Task.Run 的性能急剧降低</a>. But this blog was written in Chinese, so I translate its content to English. Waterlv is an MVP(Microsoft Most Valuable Professional), and he is good at .NET Core\WPF\.NET. Here is his <a href="https://blog.walterlv.com/" target="_blank" rel="noopener">Blog</a>.</p>

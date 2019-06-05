@@ -90,7 +90,7 @@
 <meta property="og:image" content="http://yoursite.com/2019/06/04/How-does-Razor-translate-ActionResult-to-Html/2019-6-5.jpg">
 <meta property="og:image" content="http://yoursite.com/2019/06/04/How-does-Razor-translate-ActionResult-to-Html/2019-6-5-11.jpg">
 <meta property="og:image" content="http://yoursite.com/2019/06/04/How-does-Razor-translate-ActionResult-to-Html/2019-6-5-16.jpg">
-<meta property="og:updated_time" content="2019-06-05T22:58:33.585Z">
+<meta property="og:updated_time" content="2019-06-05T23:45:09.053Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="How does Asp.NET MVC translates ActionResult into Html? (Part 1)">
 <meta name="twitter:description" content="IntroductionAs we all know, the UI of the website is rendered by web browsers. And the web browsers create kinds of controls depends on the HTML code provided by the website. So, when we visit a websi">
@@ -316,6 +316,7 @@
       
         <h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h3><p>As we all know, the <code>UI</code> of the website is rendered by web browsers. And the web browsers create kinds of controls depends on the <code>HTML</code> code provided by the website. So, when we visit a website, the web browsers will try to get the <code>HTML</code> code of the website and the relative sources it needed according to <code>Http</code> protocol, then the browsers will create and render all the controls in this website correctly.</p>
 <p>The <code>View</code> in the <code>ASP.NET MVC</code> determines the rendering of the website. And we can notice that the name of <code>View</code> is the same as <code>Action</code>‘s name. When an <code>Action</code> is executed, the <code>ASP.NET MVC</code> will get the <code>View</code> as a result by the name of the <code>Action</code>. Then the <code>View</code> will be translated into <code>HTML</code> code and sent to browsers as a return.</p>
+<a id="more"></a>
 <p>So, the rendering in the <code>ASP.NET</code> is about how to create the correct <code>HTML</code> code.</p>
 <p>Here is the code of a simple <code>Action</code>.</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> ActionResult <span class="title">Index</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> View();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>

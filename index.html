@@ -242,6 +242,190 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/06/04/How-does-Razor-translate-ActionResult-to-Html/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Neal chen">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/badboy.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Neal's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/06/04/How-does-Razor-translate-ActionResult-to-Html/" itemprop="url">How does Asp.NET MVC translates ActionResult into Html? (Part 1)</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-06-04T18:35:53-06:00">
+                2019-06-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h3><p>As we all know, the <code>UI</code> of the website is rendered by web browsers. And the web browsers create kinds of controls depends on the <code>HTML</code> code provided by the website. So, when we visit a website, the web browsers will try to get the <code>HTML</code> code of the website and the relative sources it needed according to <code>Http</code> protocol, then the browsers will create and render all the controls in this website correctly.</p>
+<p>The <code>View</code> in the <code>ASP.NET MVC</code> determines the rendering of the website. And we can notice that the name of <code>View</code> is the same as <code>Action</code>‘s name. When an <code>Action</code> is executed, the <code>ASP.NET MVC</code> will get the <code>View</code> as a result by the name of the <code>Action</code>. Then the <code>View</code> will be translated into <code>HTML</code> code and sent to browsers as a return.</p>
+<p>So, the rendering in the <code>ASP.NET</code> is about how to create the correct <code>HTML</code> code.</p>
+<p>Here is the code of a simple <code>Action</code>.</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> ActionResult <span class="title">Index</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> View();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>In this method, it returns a <code>ViewResult</code> as a result. And how does it work? How does the <code>ASP.NET</code> find the correct view? And how to translate it into HTML code?</p>
+<p>I will try to figure out the first question in this article (part one). And we will discuss the second question in my next blog (part two).</p>
+<h3 id="Details"><a href="#Details" class="headerlink" title="Details"></a>Details</h3><p>All the source code about the <code>ASP.NET</code> is provided by Microsoft. And the code is posted on the <code>Github</code>, for more detail, visit <a href="https://github.com/aspnet/AspNetWebStack" target="_blank" rel="noopener">AspNetWebStack</a>.</p>
+<h3 id="Controller"><a href="#Controller" class="headerlink" title="Controller"></a>Controller</h3><p>The <code>Controller</code> class inherits the <code>ControllerBase</code> class. And here is the source code of the <code>Execute</code> method in the <code>ControllerBase</code> class.</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">Execute</span>(<span class="params">RequestContext requestContext</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (requestContext == <span class="literal">null</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ArgumentNullException(<span class="string">"requestContext"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (requestContext.HttpContext == <span class="literal">null</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ArgumentException(MvcResources.ControllerBase_CannotExecuteWithNullHttpContext, <span class="string">"requestContext"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    VerifyExecuteCalledOnce();</span><br><span class="line">    Initialize(requestContext);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">using</span> (ScopeStorage.CreateTransientScope())</span><br><span class="line">    &#123;</span><br><span class="line">        ExecuteCore();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">ExecuteCore</span>(<span class="params"></span>)</span>;</span><br></pre></td></tr></table></figure>
+<p>And as the code shows, when the <code>Execute</code> method is executed, it will call the <code>ExecuteCore</code> method which is an abstract method and this method is implemented in the <code>Controller</code> class which is the only subclass of <code>ControllerBase</code>.</p>
+<p>Here is the source code of <code>ExecuteCore</code> in <code>Controller</code> class.</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">override</span> <span class="keyword">void</span> <span class="title">ExecuteCore</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// If code in this method needs to be updated, please also check the BeginExecuteCore() and</span></span><br><span class="line">    <span class="comment">// EndExecuteCore() methods of AsyncController to see if that code also must be updated.</span></span><br><span class="line">    PossiblyLoadTempData();</span><br><span class="line">    <span class="keyword">try</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">string</span> actionName = GetActionName(RouteData);</span><br><span class="line">        <span class="keyword">if</span> (!ActionInvoker.InvokeAction(ControllerContext, actionName))</span><br><span class="line">        &#123;</span><br><span class="line">            HandleUnknownAction(actionName);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">finally</span></span><br><span class="line">    &#123;</span><br><span class="line">        PossiblySaveTempData();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>It is easy to notice that there are four steps in the <code>ExecuteCore</code> method.</p>
+<ol>
+<li>Load temp data</li>
+<li>Get the name of action by the <code>RouteData</code></li>
+<li>Call the <code>ActionInvoker.InvokeAction</code> method to execute the action which’s name is equal to the <code>actionName</code>.</li>
+<li>Save temp data</li>
+</ol>
+<p>And what does <code>ActionInvoker.InvokeAction</code> do? How does it translate the <code>ActionResult</code> into the <code>HTML</code> code? Reading the source code with these questions, I found that in the <code>InvokeAction</code> method it calls <code>ActionResult.ExecuteResult</code> after getting the result from the action method.</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">virtual</span> <span class="keyword">bool</span> <span class="title">InvokeAction</span>(<span class="params">ControllerContext controllerContext, <span class="keyword">string</span> actionName</span>)</span></span><br><span class="line"><span class="function"></span>  &#123;</span><br><span class="line">    <span class="comment">//some code is omitted here</span></span><br><span class="line">     ...</span><br><span class="line">     <span class="keyword">if</span> (authenticationContext.Result != <span class="literal">null</span>)</span><br><span class="line">     &#123;</span><br><span class="line">         <span class="comment">//some code is omitted here</span></span><br><span class="line">         ...</span><br><span class="line">         InvokeActionResult(controllerContext, challengeContext.Result ?? authenticationContext.Result);</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="keyword">else</span></span><br><span class="line">     &#123;</span><br><span class="line">         <span class="comment">// some code is omitted here</span></span><br><span class="line">         ...</span><br><span class="line">         <span class="keyword">if</span> (authorizationContext.Result != <span class="literal">null</span>)</span><br><span class="line">         &#123;</span><br><span class="line">             <span class="comment">//some code is omitted here</span></span><br><span class="line">             ...</span><br><span class="line">             InvokeActionResult(controllerContext, challengeContext.Result ?? authorizationContext.Result);</span><br><span class="line">         &#125;</span><br><span class="line">         <span class="keyword">else</span></span><br><span class="line">         &#123;</span><br><span class="line">            <span class="comment">//some code is omitted here</span></span><br><span class="line">             ...</span><br><span class="line">             <span class="comment">//In this method , it calls InvokeActionResult too.</span></span><br><span class="line">             InvokeActionResultWithFilters(controllerContext, filterInfo.ResultFilters,</span><br><span class="line">                 challengeContext.Result ?? postActionContext.Result);</span><br><span class="line">         &#125;</span><br><span class="line">     &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">InvokeActionResult</span>(<span class="params">ControllerContext controllerContext, ActionResult actionResult</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    actionResult.ExecuteResult(controllerContext);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>So, I guess that the secret of how does <code>ASP.NET</code> translate the <code>ActionResult</code> into <code>Html</code> code is in the implementation of <code>ActionResult</code> class and its subclasses.</p>
+<h3 id="ViewResult"><a href="#ViewResult" class="headerlink" title="ViewResult"></a><code>ViewResult</code></h3><p>What does the <code>ActionResult</code> look like? What does the <code>ExecuteResult</code> method do? Let’s see the code of <code>ActionResult</code> class.</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">class</span> <span class="title">ActionResult</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">ExecuteResult</span>(<span class="params">ControllerContext context</span>)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>The <code>ActionResult</code> is an abstract class and the <code>ExecuteResult</code> method is an abstract method too. Obviously, the correct implementation is in the subclass. So, I read the <code>ExecuteResult</code> method in the <code>ViewResultBase</code> class which is the base class of <code>ViewResult</code> and inherits the <code>ActionResult</code> class.</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">void</span> <span class="title">ExecuteResult</span>(<span class="params">ControllerContext context</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (context == <span class="literal">null</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ArgumentNullException(<span class="string">"context"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (String.IsNullOrEmpty(ViewName))</span><br><span class="line">    &#123;</span><br><span class="line">        ViewName = context.RouteData.GetRequiredString(<span class="string">"action"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ViewEngineResult result = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (View == <span class="literal">null</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        result = FindView(context);</span><br><span class="line">        View = result.View;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    TextWriter writer = context.HttpContext.Response.Output;</span><br><span class="line">    ViewContext viewContext = <span class="keyword">new</span> ViewContext(context, View, ViewData, TempData, writer);</span><br><span class="line">    View.Render(viewContext, writer);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (result != <span class="literal">null</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        result.ViewEngine.ReleaseView(context, View);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>After reading this method, I am sure that this method is the core of translating the view into HTML. And there are 4 steps.</p>
+<ol>
+<li>If the <code>ViewName</code> is empty, it will set the name of <code>Action</code> as view’s name.</li>
+<li>Find the correct <code>View</code> instance depends on the <code>context</code></li>
+<li>Call the <code>Render</code> method of the <code>View</code> instance to write the content of the <code>View</code> into the information of the <code>HttpContext</code>, and then return it to the browser.</li>
+<li>Release the <code>view</code>‘s data</li>
+</ol>
+<p>So, we can split the translation into two parts. The first part is to find the correct <code>View</code>. And the second part is to translate.</p>
+<p><img src="/2019/06/04/How-does-Razor-translate-ActionResult-to-Html/2019-6-4.jpg" alt></p>
+<h3 id="How-to-find-the-correct-view"><a href="#How-to-find-the-correct-view" class="headerlink" title="How to find the correct view"></a>How to find the correct view</h3><p>The <code>View</code> files are named with the name of the <code>action</code> method, and these files are always placed in the directory which is named with the name of the <code>Controller</code> class. And this directory will be placed in the <code>View</code> directory in the root directory.<br><img src="/2019/06/04/How-does-Razor-translate-ActionResult-to-Html/2019-6-5.jpg" alt></p>
+<p>How does the <code>ViewResult</code> find the correct <code>View</code>?</p>
+<p>Here is the source code of <code>FindView</code> method in the <code>ViewResult</code> class.</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">override</span> ViewEngineResult <span class="title">FindView</span>(<span class="params">ControllerContext context</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ViewEngineResult result = ViewEngineCollection.FindView(context, ViewName, MasterName);</span><br><span class="line">    <span class="keyword">if</span> (result.View != <span class="literal">null</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// we need to generate an exception containing all the locations we searched</span></span><br><span class="line">    StringBuilder locationsText = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">    <span class="keyword">foreach</span> (<span class="keyword">string</span> location <span class="keyword">in</span> result.SearchedLocations)</span><br><span class="line">    &#123;</span><br><span class="line">        locationsText.AppendLine();</span><br><span class="line">        locationsText.Append(location);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> InvalidOperationException(String.Format(CultureInfo.CurrentCulture, MvcResources.Common_ViewNotFound, ViewName, locationsText));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>We can see from the code that the  <code>FindView</code> method calls <code>ViewEngineCollection.FindView</code> method to find the <code>View</code> with the <code>ViewName</code> and <code>MaterName</code>. If the <code>View</code> is found, this method will return a <code>ViewEngineResult</code> instance, if not the <code>ViewEngineResult.FindView</code> will throw an <code>InvalidOperationException</code> exception.</p>
+<p>And there are two classes we have not seen before. One is the <code>ViewEngineCollection</code> class and the other is the <code>ViewEngineResult</code> class. So, let’s continue reading the code of these classes to figure out what do they do.</p>
+<h4 id="ViewEngineCollection"><a href="#ViewEngineCollection" class="headerlink" title="ViewEngineCollection"></a>ViewEngineCollection</h4><p>After reading the code about <code>ViewEngineCollection</code>, I found that all of the instances of <code>ViewEngineCollection</code> are managed by a static class named <code>ViewEngines</code>. And the code in <code>ViewEngines</code> is quite simple.</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">ViewEngines</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">readonly</span> ViewEngineCollection _engines = <span class="keyword">new</span> ViewEngineCollection</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">new</span> WebFormViewEngine(),</span><br><span class="line">        <span class="keyword">new</span> RazorViewEngine(),</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> ViewEngineCollection Engines</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">get</span> &#123; <span class="keyword">return</span> _engines; &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>It is easy to find that there are two special classes in the code, <code>WebFormViewEngine</code> and <code>RazorViewEngine</code>. In the <code>MVC</code> application, we use the <code>RazorViewEngine</code> class to render the <code>View</code>.</p>
+<p>Here is the inheritance map of the <code>WebFormViewEngine</code> and the <code>RazorViewEngine</code>.<br><img src="/2019/06/04/How-does-Razor-translate-ActionResult-to-Html/2019-6-5-11.jpg" alt></p>
+<p>We can get some information from this picture.</p>
+<ol>
+<li>Their base class is <code>BuildManagerViewEngine</code> class, it means that these two classes are associated with building or compiling.</li>
+<li>The base class of <code>BuildManagerViewEngine</code> is the <code>VirtualPathProviderViewEngine</code>, it tells us that these two classes are based on the relative path to manage <code>View</code>.</li>
+</ol>
+<p>In this article, we are talking about <code>ASP.NET MVC</code>. So, we ignore the <code>WebFormViewEngine</code> and continue reading the code of <code>RazorViewEngine</code>.</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">RazorViewEngine</span> : <span class="title">BuildManagerViewEngine</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">internal</span> <span class="keyword">static</span> <span class="keyword">readonly</span> <span class="keyword">string</span> ViewStartFileName = <span class="string">"_ViewStart"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//Some code is omitted here</span></span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">     <span class="function"><span class="keyword">public</span> <span class="title">RazorViewEngine</span>(<span class="params">IViewPageActivator viewPageActivator</span>)</span></span><br><span class="line"><span class="function">            : <span class="title">base</span>(<span class="params">viewPageActivator</span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            AreaViewLocationFormats = <span class="keyword">new</span>[]</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="string">"~/Areas/&#123;2&#125;/Views/&#123;1&#125;/&#123;0&#125;.cshtml"</span>,</span><br><span class="line">                <span class="string">"~/Areas/&#123;2&#125;/Views/&#123;1&#125;/&#123;0&#125;.vbhtml"</span>,</span><br><span class="line">                <span class="string">"~/Areas/&#123;2&#125;/Views/Shared/&#123;0&#125;.cshtml"</span>,</span><br><span class="line">                <span class="string">"~/Areas/&#123;2&#125;/Views/Shared/&#123;0&#125;.vbhtml"</span></span><br><span class="line">            &#125;;</span><br><span class="line">            AreaMasterLocationFormats = <span class="keyword">new</span>[]</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="string">"~/Areas/&#123;2&#125;/Views/&#123;1&#125;/&#123;0&#125;.cshtml"</span>,</span><br><span class="line">                <span class="string">"~/Areas/&#123;2&#125;/Views/&#123;1&#125;/&#123;0&#125;.vbhtml"</span>,</span><br><span class="line">                <span class="string">"~/Areas/&#123;2&#125;/Views/Shared/&#123;0&#125;.cshtml"</span>,</span><br><span class="line">                <span class="string">"~/Areas/&#123;2&#125;/Views/Shared/&#123;0&#125;.vbhtml"</span></span><br><span class="line">            &#125;;</span><br><span class="line">            <span class="comment">//Some code is omitted here</span></span><br><span class="line">            ...</span><br><span class="line">        &#125;</span><br><span class="line">    <span class="comment">//Some code is omitted here</span></span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>It is important to notice that there is a magic string named <code>ViewStartFileName</code>, and its value is <code>_ViewStart</code>. So, it means the <code>_ViewStart</code> is the start page without changing. And we can see that the <code>RazorViewEngine</code> class set lots of location format strings when it is initializing, and these formats specify the search path for the pages.</p>
+<p>Finally, I found the implementation of the <code>FindView</code> method in the <code>VirtualPathProviderViewEngine</code> class.</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">virtual</span> ViewEngineResult <span class="title">FindView</span>(<span class="params">ControllerContextcontrollerContext, <span class="keyword">string</span> viewName, <span class="keyword">string</span> masterName, <span class="keyword">bool</span> useCache</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (controllerContext == <span class="literal">null</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ArgumentNullException(<span class="string">"controllerContext"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (String.IsNullOrEmpty(viewName))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ArgumentException(MvcResources.Common_NullOrEmpty, <span class="string">"viewName"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">string</span>[] viewLocationsSearched;</span><br><span class="line">    <span class="keyword">string</span>[] masterLocationsSearched;</span><br><span class="line">    <span class="keyword">string</span> controllerName = controllerContext.RouteData.GetRequiredString(<span class="string">"controller"</span>);</span><br><span class="line">    <span class="keyword">string</span> viewPath = GetPath(controllerContext, ViewLocationFormats, AreaViewLocationFormats, <span class="string">"ViewLocationFormats"</span>, viewName, controllerName, CacheKeyPrefixView, useCache, <span class="keyword">out</span> viewLocationsSearched);</span><br><span class="line">    <span class="keyword">string</span> masterPath = GetPath(controllerContext, MasterLocationFormats, AreaMasterLocationFormats, <span class="string">"MasterLocationFormats"</span>, masterName, controllerName, CacheKeyPrefixMaster, useCache, <span class="keyword">out</span> masterLocationsSearched);</span><br><span class="line">    <span class="keyword">if</span> (String.IsNullOrEmpty(viewPath) || (String.IsNullOrEmpty(masterPath) &amp;&amp; !String.IsNullOrEmpty(masterName)))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ViewEngineResult(viewLocationsSearched.Union(masterLocationsSearched));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> ViewEngineResult(CreateView(controllerContext, viewPath, masterPath), <span class="keyword">this</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>And there are 4 steps to create an instance of the <code>ViewEngineResult</code>.</p>
+<ol>
+<li>Find the correct name of the controller by the <code>RouteData</code></li>
+<li>Get the file path of the <code>View</code> by passing the <code>viewName</code>, <code>masterName</code> and <code>controllerName</code> into the <code>GetPath</code> method</li>
+<li>Get the master’s file path by calling <code>GetPath</code> method</li>
+<li>New an instance of <code>ViewEngineResult</code> and return it</li>
+</ol>
+<p>And the <code>GetPath</code> method needs the <code>LocationFormats</code> we mentioned above to find the correct path.</p>
+<h4 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h4><p>Overall, we probably know that how does <code>ASP.NET MVC</code> finds the correct <code>View</code> file. When a <code>Controller</code> instance is executed, it will call <code>ActionInvoker.InvokeAction</code> method to execute the correct <code>Action</code> by the <code>actionName</code>. And in the <code>ActionInvoker.InvokeAction</code> method, it calls <code>ActionResult.ExecuteResult</code> method, in this method the <code>ViewResult.FindView</code> method is called to find the correct <code>View</code>. And after reading the code about <code>RazorViewEngine</code> and <code>ViewEngineCollection</code> we can know that the <code>RazorViewEngine</code> set lots of location formats to help the <code>VirtualPathProviderViewnEngine.FindView</code> method to find the correct <code>View</code> by relative path.<br><img src="/2019/06/04/How-does-Razor-translate-ActionResult-to-Html/2019-6-5-16.jpg" alt></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/28/NET-C-exception-handling-writes-an-empty-try-block-then-write-important-code-in-finally-block/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1737,153 +1921,13 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/08/Find the window you wanted by using EnumWindows/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Neal chen">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/badboy.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Neal's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/05/08/Find the window you wanted by using EnumWindows/" itemprop="url">Find the window you wanted by using EnumWindows</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-05-08T18:39:11-06:00">
-                2019-05-08
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h4 id="During-the-development-of-windows-application-you-can-operate-other-windows-by-enumerating-windows-with-EnumWindows"><a href="#During-the-development-of-windows-application-you-can-operate-other-windows-by-enumerating-windows-with-EnumWindows" class="headerlink" title="During the development of windows application, you can operate other windows by enumerating windows with EnumWindows."></a>During the development of windows application, you can operate other windows by enumerating windows with <code>EnumWindows</code>.</h4><hr>
-<h2 id="Details"><a href="#Details" class="headerlink" title="Details"></a>Details</h2><blockquote>
-<p>The original link is <a href="https://blog.walterlv.com/post/find-specific-window-by-enum-windows.html#enumwindows" title="source" target="_blank" rel="noopener">使用 EnumWindows 找到满足你要求的窗口 - walterlv</a>. But this blog was written in Chinese, so I translate its content to English. Waterlv is an MVP(Microsoft Most Valuable Professional), and he is good at .NET Core\WPF\.NET. Here is his <a href="https://blog.walterlv.com/" target="_blank" rel="noopener">Blog</a>.</p>
-</blockquote>
-<h2 id="EnumWindows"><a href="#EnumWindows" class="headerlink" title="EnumWindows"></a><code>EnumWindows</code></h2><p>You can get more details about <code>EnumWindows</code> from the Microsoft website.</p>
-<p>Before you use <code>EnumWindows</code> with <code>C#</code> , you have to write a platform to call the P/Invoke method. </p>
-<p>Like this:</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">DllImport(<span class="meta-string">"user32.dll"</span>)</span>]</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">extern</span> <span class="keyword">int</span> <span class="title">EnumWindows</span>(<span class="params">WndEnumProc lpEnumFunc, <span class="keyword">int</span> lParam</span>)</span>;</span><br></pre></td></tr></table></figure>
-<h2 id="Enumerate-all-top-level-windows"><a href="#Enumerate-all-top-level-windows" class="headerlink" title="Enumerate all top-level windows"></a>Enumerate all top-level windows</h2><p>This is the official document for this API description,</p>
-<blockquote>
-<p>Enumerates all top-level windows on the screen by passing the handle to each window, in turn, to an application-defined callback function.</p>
-</blockquote>
-<p>But not all the enumerated windows are top-level windows, some windows are not top-level windows.For more details,visit <a href="&quot;https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-enumwindows#remarks&quot;" title="remarks">EnumWindows remarks</a>.</p>
-<p>So,we can get all windows by running these codes followed,</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> IReadOnlyList&lt;<span class="keyword">int</span>&gt; <span class="title">EnumWindows</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">var</span> windowList = <span class="keyword">new</span> List&lt;<span class="keyword">int</span>&gt;();</span><br><span class="line">    EnumWindows(OnWindowEnum, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">return</span> windowList;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">OnWindowEnum</span>(<span class="params"><span class="keyword">int</span> hwnd, <span class="keyword">int</span> lparam</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="comment">// you can add some conditions here.</span></span><br><span class="line">        windowList.Add(hwnd);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="Enumerate-windows-with-a-specific-title-or-class-name"><a href="#Enumerate-windows-with-a-specific-title-or-class-name" class="headerlink" title="Enumerate windows with a specific title or class name"></a>Enumerate windows with a specific title or class name</h2><p>You should add some Win32 API to filter windows. These APIs are the methods we plan to use.</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// get class name of specific window</span></span><br><span class="line">[<span class="meta">DllImport(<span class="meta-string">"user32.dll"</span>)</span>]</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">extern</span> <span class="keyword">int</span> <span class="title">GetClassName</span>(<span class="params"><span class="keyword">int</span> hWnd, StringBuilder lpString, <span class="keyword">int</span> nMaxCount</span>)</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// get title of specific window</span></span><br><span class="line">[<span class="meta">DllImport(<span class="meta-string">"user32"</span>)</span>]</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">extern</span> <span class="keyword">int</span> <span class="title">GetWindowText</span>(<span class="params"><span class="keyword">int</span> hwnd, StringBuilder lptrString, <span class="keyword">int</span> nMaxCount</span>)</span>;</span><br></pre></td></tr></table></figure>
-<p>We can enumerate windows with specific class name by running the code,</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> IReadOnlyList&lt;<span class="keyword">int</span>&gt; <span class="title">FindWindowByClassName</span>(<span class="params"><span class="keyword">string</span> className</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">var</span> windowList = <span class="keyword">new</span> List&lt;<span class="keyword">int</span>&gt;();</span><br><span class="line">    EnumWindows(OnWindowEnum, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">return</span> windowList;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">OnWindowEnum</span>(<span class="params"><span class="keyword">int</span> hwnd, <span class="keyword">int</span> lparam</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">var</span> lpString = <span class="keyword">new</span> StringBuilder(<span class="number">512</span>);</span><br><span class="line">        GetClassName(hwnd, lpString, lpString.Capacity);</span><br><span class="line">        <span class="keyword">if</span> (lpString.ToString().Equals(className, StringComparison.InvariantCultureIgnoreCase))</span><br><span class="line">        &#123;</span><br><span class="line">            windowList.Add(hwnd);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>Also, you can change the method from <code>GetClassName</code> to <code>GetWindowText</code> to enumerate windows by specific title.</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> lpString = <span class="keyword">new</span> StringBuilder(<span class="number">512</span>);</span><br><span class="line">GetWindowText(hwnd,lpString,lpString.Capacity);</span><br></pre></td></tr></table></figure>
-<h2 id="References"><a href="#References" class="headerlink" title="References"></a>References</h2><ul>
-<li><a href="&quot;https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-enumwindows&quot;" title="winuser">EnumWindows function (winuser.h) - Microsoft Docs</a></li>
-<li><a href="&quot;https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-getclassname&quot;" title="GetClassName">GetClassName function (winuser.h) - Microsoft Docs</a></li>
-</ul>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+  </nav>
+
 
 
           </div>
@@ -1929,7 +1973,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-count">11</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
